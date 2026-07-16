@@ -80,12 +80,20 @@ void menu_choice(int choice, Student student[], int *scounter)
             // design plate for student database
             printf(" ID                       Name                           Grade %\n");
             printf("----- ------------------------------------------------- ---------\n");
+            FILE *file = fopen("students.csv", "r");
+            if(file == NULL)
+            {
+                perror("Could not open file\n");
+            }
+            
             for(int i = 0; i < (*scounter); i++)
             {
                 // printing the student data
                 printf("-%-5d %-49s %.2f\n",
-                     student[i].id, student[i].name, student[i].grade);
+                    student[i].id, student[i].name, student[i].grade);    
             }
+        
+            fclose(file);
             break;
         
         case 3:
@@ -102,6 +110,8 @@ void menu_choice(int choice, Student student[], int *scounter)
 
         case 6:
             printf("\nSave and exit selected\n");
+
+            // NOTE: TODO: this writes instead of append, i need to add an if statement to solve this!!!!
             
             // opens a csv to write the data to it
             FILE *pfile = fopen("students.csv", "w");
