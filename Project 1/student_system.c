@@ -102,6 +102,26 @@ void menu_choice(int choice, Student student[], int *scounter)
 
         case 6:
             printf("\nSave and exit selected\n");
+            
+            // opens a csv to write the data to it
+            FILE *pfile = fopen("students.csv", "w");
+
+            // checking if the file pointer is NULL
+            if(pfile == NULL)
+            {
+                perror("Error opening file");
+            }
+
+            // writing the data to the csv
+            for(int i = 0; i < (*scounter); i++)
+            {
+                // printing the student data to the csv
+                fprintf(pfile, "%d,%s,%.2f\n",
+                     student[i].id, student[i].name, student[i].grade);
+            }
+
+            // closing the file
+            fclose(pfile);
             break;
 
         default:
