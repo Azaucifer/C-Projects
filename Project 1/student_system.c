@@ -1,12 +1,27 @@
 #include <stdio.h>
+#include <string.h>
+
+// defining a struct for students
+typedef struct 
+{
+    int id;
+    char name[50];
+    float grade;
+}Student;
 
 // function prototypes
-void menu_choice(int choice);
+void menu_choice(int choice, Student student[], int scounter);
 
 int main()
 {
     // initialising choice to 0
     int choice = 0;
+
+    // creating an array to store student data
+    Student student[100] = {0};
+
+    // counter to keep count of students
+    int scounter = 0;
 
     // display the dashboard at least once and ask for user input
     do
@@ -23,21 +38,37 @@ int main()
         scanf("%d", &choice);
         
         // calling the menu choice function
-        menu_choice(choice);
+        menu_choice(choice, student, scounter);
 
     }while(choice != 6);
+
+    // printing to test if the student data is captured
+    printf("ID: %d  Name: %s  Grade: %.2f\n", student[scounter].id, student[scounter].name, student[scounter].grade);
 
     return 0;
 }
 
 
+
+
+
+
 // function for menu choice
-void menu_choice(int choice)
+void menu_choice(int choice, Student student[], int scounter)
 {
     switch(choice)
     {
         case 1:
             printf("\nAdd new student selected\n");
+            printf("Enter ID: ");
+            scanf("%d", &student[scounter].id);
+            getchar();
+            printf("Enter Name: ");
+            fgets(student[scounter].name, sizeof(student[scounter].name) , stdin);
+            student[scounter].name[strlen(student[scounter].name) - 1] = '\0';
+            printf("Enter Grade: ");
+            scanf("%f", &student[scounter].grade);
+            printf("\nAlert: Student added successfully!\n");
             break;
         
         case 2:
