@@ -10,7 +10,7 @@ typedef struct
 }Student;
 
 // function prototypes
-void menu_choice(int choice, Student student[], int scounter);
+void menu_choice(int choice, Student student[], int *scounter);
 
 int main()
 {
@@ -38,12 +38,9 @@ int main()
         scanf("%d", &choice);
         
         // calling the menu choice function
-        menu_choice(choice, student, scounter);
+        menu_choice(choice, student, &scounter);
 
     }while(choice != 6);
-
-    // printing to test if the student data is captured
-    printf("ID: %d  Name: %s  Grade: %.2f\n", student[scounter].id, student[scounter].name, student[scounter].grade);
 
     return 0;
 }
@@ -54,25 +51,33 @@ int main()
 
 
 // function for menu choice
-void menu_choice(int choice, Student student[], int scounter)
+void menu_choice(int choice, Student student[], int *scounter)
 {
     switch(choice)
     {
         case 1:
             printf("\nAdd new student selected\n");
             printf("Enter ID: ");
-            scanf("%d", &student[scounter].id);
+            scanf("%d", &student[*scounter].id);
             getchar();
             printf("Enter Name: ");
-            fgets(student[scounter].name, sizeof(student[scounter].name) , stdin);
-            student[scounter].name[strlen(student[scounter].name) - 1] = '\0';
+            fgets(student[*scounter].name, sizeof(student[*scounter].name) , stdin);
+            student[*scounter].name[strlen(student[*scounter].name) - 1] = '\0';
             printf("Enter Grade: ");
-            scanf("%f", &student[scounter].grade);
+            scanf("%f", &student[*scounter].grade);
             printf("\nAlert: Student added successfully!\n");
+            // increasing the student counter everytime a new student is added
+            (*scounter)++;
             break;
         
         case 2:
             printf("\nView all students selected\n");
+            for(int i = 0; i < (*scounter); i++)
+            {
+                // printing the student data
+                printf("ID: %d  Name: %s  Grade: %.2f\n",
+                     student[i].id, student[i].name, student[i].grade);
+            }
             break;
         
         case 3:
