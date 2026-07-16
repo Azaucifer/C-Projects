@@ -63,7 +63,7 @@ void menu_choice(int choice, Student student[], int *scounter)
             printf("Enter Name: ");
             fgets(student[*scounter].name, sizeof(student[*scounter].name) , stdin);
             student[*scounter].name[strlen(student[*scounter].name) - 1] = '\0';
-            printf("Enter Grade: ");
+            printf("Enter Grade Percent: ");
             scanf("%f", &student[*scounter].grade);
             printf("\nAlert: Student added successfully!\n");
             // increasing the student counter everytime a new student is added
@@ -72,10 +72,13 @@ void menu_choice(int choice, Student student[], int *scounter)
         
         case 2:
             printf("\nView all students selected\n");
+            // design plate for student database
+            printf(" ID                       Name                           Grade %\n");
+            printf("----- ------------------------------------------------- ---------\n");
             for(int i = 0; i < (*scounter); i++)
             {
                 // printing the student data
-                printf("ID: %d  Name: %s  Grade: %.2f\n",
+                printf("-%-5d %-49s %.2f\n",
                      student[i].id, student[i].name, student[i].grade);
             }
             break;
