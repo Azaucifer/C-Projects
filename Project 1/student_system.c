@@ -73,6 +73,60 @@ void menu_choice(int choice, Student student[], int *scounter)
             printf("\nAlert: Student added successfully!\n");
             // increasing the student counter everytime a new student is added
             (*scounter)++;
+
+            // opens a csv to read the data in it
+            FILE *ofile = fopen("students.csv", "r");
+
+            // checking if the file pointer is NULL
+            if(ofile == NULL)
+            {
+                perror("Error opening file");
+            }
+
+            // checking if file is empty
+            fseek(ofile, 0, SEEK_END);
+            long fsize = ftell(ofile);
+
+            // if file is empty it writes the data to the file
+            if(fsize == 0)
+            {
+                FILE *ofile = fopen("students.csv", "w");
+
+                // checking if the file pointer is NULL
+                if(ofile == NULL)
+                {
+                    perror("Error opening file");
+                }
+                // writing the data to the csv
+                for(int i = 0; i < (*scounter); i++)
+                {
+                    // printing the student data to the csv
+                    fprintf(ofile, "%d,%s,%.2f\n",
+                        student[i].id, student[i].name, student[i].grade);
+                }
+
+            }
+            else
+            {
+                FILE *ofile = fopen("students.csv", "a");
+
+                // checking if the file pointer is NULL
+                if(ofile == NULL)
+                {
+                    perror("Error opening file");
+                }
+                // appending the data to the csv
+                for(int i = 0; i < (*scounter); i++)
+                {
+                    // printing the student data to the csv
+                    fprintf(ofile, "%d,%s,%.2f\n",
+                        student[i].id, student[i].name, student[i].grade);
+                }
+                printf("Data Saved and User Exited successfully!\n");
+            }
+
+            // closing the file
+            fclose(ofile);
             break;
         
         case 2:
@@ -80,17 +134,22 @@ void menu_choice(int choice, Student student[], int *scounter)
             // design plate for student database
             printf(" ID                       Name                           Grade %\n");
             printf("----- ------------------------------------------------- ---------\n");
+
+            // reads the student.csv and prints the data on the terminal
             FILE *file = fopen("students.csv", "r");
             if(file == NULL)
             {
                 perror("Could not open file\n");
             }
             
-            for(int i = 0; i < (*scounter); i++)
+            // this prints data to the terminal
+            char buffer[1024];
+            while(fgets(buffer, sizeof(buffer), file) != NULL)
             {
-                // printing the student data
-                printf("-%-5d %-49s %.2f\n",
-                    student[i].id, student[i].name, student[i].grade);    
+                if(sscanf(buffer,"%d,%49[^,],%f", &student[*scounter].id, &student[*scounter].name, &student[*scounter].grade) == 3)
+                {
+                    printf("-%-5d %-49s %6.2f\n", student[*scounter].id, student[*scounter].name, student[*scounter].grade);
+                }
             }
         
             fclose(file);
@@ -110,28 +169,6 @@ void menu_choice(int choice, Student student[], int *scounter)
 
         case 6:
             printf("\nSave and exit selected\n");
-
-            // NOTE: TODO: this writes instead of append, i need to add an if statement to solve this!!!!
-            
-            // opens a csv to write the data to it
-            FILE *pfile = fopen("students.csv", "w");
-
-            // checking if the file pointer is NULL
-            if(pfile == NULL)
-            {
-                perror("Error opening file");
-            }
-
-            // writing the data to the csv
-            for(int i = 0; i < (*scounter); i++)
-            {
-                // printing the student data to the csv
-                fprintf(pfile, "%d,%s,%.2f\n",
-                     student[i].id, student[i].name, student[i].grade);
-            }
-
-            // closing the file
-            fclose(pfile);
             break;
 
         default:
@@ -139,3 +176,4 @@ void menu_choice(int choice, Student student[], int *scounter)
             break;
     }
 }
+
