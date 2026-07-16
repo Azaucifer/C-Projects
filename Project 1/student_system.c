@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 
+/* This is a student dashboard system, where user can add a student, 
+   view all students, search for a student by ID, delete a student by ID 
+   and update student's grade it stores everything in a students.csv file 
+   and any user can save to it and view the data */
+
 // defining a struct for students
 typedef struct 
 {
