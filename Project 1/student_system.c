@@ -16,6 +16,7 @@ typedef struct
 
 // function prototypes
 void menu_choice(int choice, Student student[], int *scounter);
+int loadfile(Student student[]);
 
 int main()
 {
@@ -27,6 +28,8 @@ int main()
 
     // counter to keep count of students
     int scounter = 0;
+
+    scounter = loadfile(student);
 
     // display the dashboard at least once and ask for user input
     do
@@ -122,7 +125,6 @@ void menu_choice(int choice, Student student[], int *scounter)
                     fprintf(ofile, "%d,%s,%.2f\n",
                         student[i].id, student[i].name, student[i].grade);
                 }
-                printf("Data Saved and User Exited successfully!\n");
             }
 
             // closing the file
@@ -135,24 +137,11 @@ void menu_choice(int choice, Student student[], int *scounter)
             printf(" ID                       Name                           Grade %\n");
             printf("----- ------------------------------------------------- ---------\n");
 
-            // reads the student.csv and prints the data on the terminal
-            FILE *file = fopen("students.csv", "r");
-            if(file == NULL)
+            // reads the student array and prints the data on the terminal
+            for (int i = 0; i < *scounter; i++) 
             {
-                perror("Could not open file\n");
+                printf("-%-5d %-49s %-6.2f\n", student[i].id, student[i].name,  student[i].grade);
             }
-            
-            // this prints data to the terminal
-            char buffer[1024];
-            while(fgets(buffer, sizeof(buffer), file) != NULL)
-            {
-                if(sscanf(buffer,"%d,%49[^,],%f", &student[*scounter].id, &student[*scounter].name, &student[*scounter].grade) == 3)
-                {
-                    printf("-%-5d %-49s %6.2f\n", student[*scounter].id, student[*scounter].name, student[*scounter].grade);
-                }
-            }
-        
-            fclose(file);
             break;
         
         case 3:
@@ -169,6 +158,7 @@ void menu_choice(int choice, Student student[], int *scounter)
 
         case 6:
             printf("\nSave and exit selected\n");
+            printf("Data Saved and User Exited successfully!\n");
             break;
 
         default:
@@ -177,3 +167,29 @@ void menu_choice(int choice, Student student[], int *scounter)
     }
 }
 
+// function to load the data to display on the terminal
+int loadfile(Student student[])
+{
+     // opens a csv to read the data in it
+            FILE *file = fopen("students.csv", "r");
+
+            // checking if the file pointer is NULL
+            if(file == NULL)
+            {
+                perror("Error opening file");
+            }
+
+            // this prints data to the terminal
+            char buffer[1024];
+            int count = 0;
+            while(fgets(buffer, sizeof(buffer), file) != NULL)
+            {
+                if(sscanf(buffer,"%d,%49[^,],%f", &student[count].id, &student[count].name, &student[count].grade) == 3)
+                {
+                    count++;
+                }
+            }
+        
+            fclose(file);
+            return count;
+}
