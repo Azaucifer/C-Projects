@@ -73,7 +73,9 @@ void menu_choice(int choice, Student student[], int *scounter)
             student[*scounter].name[strlen(student[*scounter].name) - 1] = '\0';
             printf("Enter Grade Percent: ");
             scanf("%f", &student[*scounter].grade);
-            printf("\nAlert: Student added successfully!\n");
+            printf("\n**********************************\n");
+            printf("Alert: Student added successfully!\n");
+            printf("**********************************\n");
             // increasing the student counter everytime a new student is added
             (*scounter)++;
 
@@ -111,6 +113,7 @@ void menu_choice(int choice, Student student[], int *scounter)
             }
             else
             {
+                // this appends to the file if it has data
                 FILE *ofile = fopen("students.csv", "a");
 
                 // checking if the file pointer is NULL
@@ -146,6 +149,33 @@ void menu_choice(int choice, Student student[], int *scounter)
         
         case 3:
             printf("\nSearch student by ID selected\n");
+
+            // initialising student id
+            int sid = 0;
+
+            // asking user for ID
+            printf("Enter the Student ID: ");
+            scanf("%d", &sid);
+
+            // adding a flag to print not found message
+            int flag = 0;
+            for(int i = 0; i < *scounter; i++)
+            {
+                if(sid == student[i].id)
+                {
+                    flag = 1;
+                    printf("\n************ STUDENT DETAILS *******************\n");
+                    printf("ID: %d\nName: %s\nGrade: %.2f\n", student[i].id, student[i].name, student[i].grade);
+                    printf("************************************************\n");
+                    break;
+                }
+            }
+            if(flag == 0)
+            {
+                printf("\n************ STUDENT DETAILS *******************\n");
+                printf("Student ID doesn't exist\n");
+                printf("************************************************\n");
+            }
             break;
 
         case 4:
@@ -162,7 +192,7 @@ void menu_choice(int choice, Student student[], int *scounter)
             break;
 
         default:
-            printf("\nPlease enter 1 to 6 only\n");
+            printf("\nPlease enter 1 to 6 only\n\n");
             break;
     }
 }
@@ -184,7 +214,8 @@ int loadfile(Student student[])
             int count = 0;
             while(fgets(buffer, sizeof(buffer), file) != NULL)
             {
-                if(sscanf(buffer,"%d,%49[^,],%f", &student[count].id, &student[count].name, &student[count].grade) == 3)
+                if(sscanf(buffer,"%d,%49[^,],%f", 
+                    &student[count].id, &student[count].name, &student[count].grade) == 3)
                 {
                     count++;
                 }
