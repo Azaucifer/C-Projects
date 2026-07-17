@@ -180,6 +180,32 @@ void menu_choice(int choice, Student student[], int *scounter)
 
         case 4:
             printf("\nDelete student by ID selected\n");
+            // initialising student id
+            int dsid = 0;
+
+            // asking user for ID
+            printf("Enter the Student ID: ");
+            scanf("%d", &dsid);
+
+            // adding a flag to print not found message
+            int dflag = 0;
+            for(int i = 0; i < *scounter; i++)
+            {
+                if(dsid == student[i].id)
+                {
+                    dflag = 1;
+                    printf("\n************ DELETE STUDENT ? ******************\n");
+                    printf("ID: %d\nName: %s\nGrade: %.2f\n", student[i].id, student[i].name, student[i].grade);
+                    printf("************************************************\n");
+                    break;
+                }
+            }
+            if(dflag == 0)
+            {
+                printf("\n************ STUDENT DETAILS *******************\n");
+                printf("Student ID doesn't exist\n");
+                printf("************************************************\n");
+            }
             break;
 
         case 5: 
