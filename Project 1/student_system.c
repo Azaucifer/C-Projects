@@ -54,11 +54,11 @@ int main()
 }
 
 
+/* PROGRAM FUNCTIONS ARE DEFINED HERE */
 
 
 
-
-// function for menu choice
+// 1. Function for menu choice
 void menu_choice(int choice, Student student[], int *scounter)
 {
     switch(choice)
@@ -101,6 +101,7 @@ void menu_choice(int choice, Student student[], int *scounter)
                 if(ofile == NULL)
                 {
                     perror("Error opening file");
+                    break;
                 }
                 // writing the data to the csv
                 for(int i = 0; i < (*scounter); i++)
@@ -122,12 +123,8 @@ void menu_choice(int choice, Student student[], int *scounter)
                     perror("Error opening file");
                 }
                 // appending the data to the csv
-                for(int i = 0; i < (*scounter); i++)
-                {
-                    // printing the student data to the csv
                     fprintf(ofile, "%d,%s,%.2f\n",
-                        student[i].id, student[i].name, student[i].grade);
-                }
+                        student[*scounter - 1].id, student[*scounter - 1].name, student[*scounter - 1].grade);
             }
 
             // closing the file
@@ -194,9 +191,36 @@ void menu_choice(int choice, Student student[], int *scounter)
                 if(dsid == student[i].id)
                 {
                     dflag = 1;
-                    printf("\n************ DELETE STUDENT ? ******************\n");
+                    printf("\n************* DELETED STUDENT ******************\n");
                     printf("ID: %d\nName: %s\nGrade: %.2f\n", student[i].id, student[i].name, student[i].grade);
                     printf("************************************************\n");
+                    
+                    // deletes the student and shifts all elements of the array one place left to overwrite
+                    for(int j = i; j < (*scounter) - 1; j++)
+                    {
+                        student[j] = student[j + 1];
+                    }
+
+                    // reducing the counter size by one to be accurate
+                    (*scounter)--;
+
+                    // opening the file to rewrite
+                    FILE *dfile = fopen("students.csv", "w");
+
+                    // checking if the file pointer is NULL
+                    if(dfile == NULL)
+                    {
+                        perror("Error opening file");
+                        break;
+                    }
+                    // rewriting the present data to the csv
+                    for(int i = 0; i < (*scounter); i++)
+                    {
+                        // printing the student data to the csv
+                        fprintf(dfile, "%d,%s,%.2f\n",
+                            student[i].id, student[i].name, student[i].grade);
+                    }
+                    fclose(dfile);
                     break;
                 }
             }
@@ -223,7 +247,9 @@ void menu_choice(int choice, Student student[], int *scounter)
     }
 }
 
-// function to load the data to display on the terminal
+
+
+// 2. Function to load the data to display on the terminal
 int loadfile(Student student[])
 {
      // opens a csv to read the data in it
