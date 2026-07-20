@@ -17,6 +17,7 @@ typedef struct
 // function prototypes
 void menu_choice(int choice, Student student[], int *scounter);
 int loadfile(Student student[]);
+void writeFile(Student student[], int *scounter);
 
 int main()
 {
@@ -95,21 +96,7 @@ void menu_choice(int choice, Student student[], int *scounter)
             // if file is empty it writes the data to the file
             if(fsize == 0)
             {
-                FILE *ofile = fopen("students.csv", "w");
-
-                // checking if the file pointer is NULL
-                if(ofile == NULL)
-                {
-                    perror("Error opening file");
-                    break;
-                }
-                // writing the data to the csv
-                for(int i = 0; i < (*scounter); i++)
-                {
-                    // printing the student data to the csv
-                    fprintf(ofile, "%d,%s,%.2f\n",
-                        student[i].id, student[i].name, student[i].grade);
-                }
+                writeFile(student, scounter);
 
             }
             else
@@ -122,13 +109,15 @@ void menu_choice(int choice, Student student[], int *scounter)
                 {
                     perror("Error opening file");
                 }
-                // appending the data to the csv
+                else
+                {
+                    // appending the data to the csv
                     fprintf(ofile, "%d,%s,%.2f\n",
                         student[*scounter - 1].id, student[*scounter - 1].name, student[*scounter - 1].grade);
+                    // closing the file
+                    fclose(ofile);
+                }
             }
-
-            // closing the file
-            fclose(ofile);
             break;
         
         case 2:
@@ -204,23 +193,7 @@ void menu_choice(int choice, Student student[], int *scounter)
                     // reducing the counter size by one to be accurate
                     (*scounter)--;
 
-                    // opening the file to rewrite
-                    FILE *dfile = fopen("students.csv", "w");
-
-                    // checking if the file pointer is NULL
-                    if(dfile == NULL)
-                    {
-                        perror("Error opening file");
-                        break;
-                    }
-                    // rewriting the present data to the csv
-                    for(int i = 0; i < (*scounter); i++)
-                    {
-                        // printing the student data to the csv
-                        fprintf(dfile, "%d,%s,%.2f\n",
-                            student[i].id, student[i].name, student[i].grade);
-                    }
-                    fclose(dfile);
+                    writeFile(student, scounter);
                     break;
                 }
             }
@@ -234,9 +207,15 @@ void menu_choice(int choice, Student student[], int *scounter)
 
         case 5: 
             printf("\nUpdate Grade by ID selected\n");
+
+            // initialising student id to 0
             int usid = 0;
+
+            // asking for user input
             printf("Enter Student ID: ");
             scanf("%d", &usid);
+
+            // setting a flag to run when id is found
             int uflag = 0;
 
             // check if entered id exists in the data
@@ -245,35 +224,21 @@ void menu_choice(int choice, Student student[], int *scounter)
                 if(usid == student[i].id)
                 {
                     uflag = 1;
+                    // asking user for new grade
                     printf("Enter new grade percent: ");
                     scanf("%f", &student[i].grade);
 
-                    // opening the file to rewrite
-                    FILE *ufile = fopen("students.csv", "w");
-
-                    // checking if the file pointer is NULL
-                    if(ufile == NULL)
-                    {
-                        perror("Error opening file");
-                        break;
-                    }
-                    // rewriting the present data to the csv
-                    for(int i = 0; i < (*scounter); i++)
-                    {
-                        // printing the student data to the csv
-                        fprintf(ufile, "%d,%s,%.2f\n",
-                            student[i].id, student[i].name, student[i].grade);
-                    }
-                    fclose(ufile);
+                    writeFile(student, scounter);
                 }
-                
-                if(uflag == 0)
+            }
+
+            // if flag is not triggered then display this message
+            if(uflag == 0)
                 {
                     printf("\n************ STUDENT DETAILS *******************\n");
                     printf("Student ID doesn't exist\n");
                     printf("************************************************\n");
                 }
-            }
             break;
 
         case 6:
@@ -315,4 +280,28 @@ int loadfile(Student student[])
         
             fclose(file);
             return count;
+}
+
+
+
+// 3. function to write data to csv
+void writeFile(Student student[], int *scounter)
+{
+    // opening the file to rewrite
+    FILE *ufile = fopen("students.csv", "w");
+
+    // checking if the file pointer is NULL
+    if(ufile == NULL)
+    {
+        perror("Error opening file");
+        return;
+    }
+    // writing the present data to the csv
+    for(int i = 0; i < (*scounter); i++)
+    {
+    // printing the student data to the csv
+    fprintf(ufile, "%d,%s,%.2f\n",
+                student[i].id, student[i].name, student[i].grade);
+    }
+    fclose(ufile);
 }
