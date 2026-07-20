@@ -233,7 +233,47 @@ void menu_choice(int choice, Student student[], int *scounter)
             break;
 
         case 5: 
-            printf("\nUpdate student by ID selected\n");
+            printf("\nUpdate Grade by ID selected\n");
+            int usid = 0;
+            printf("Enter Student ID: ");
+            scanf("%d", &usid);
+            int uflag = 0;
+
+            // check if entered id exists in the data
+            for(int i = 0; i < (*scounter); i++)
+            {
+                if(usid == student[i].id)
+                {
+                    uflag = 1;
+                    printf("Enter new grade percent: ");
+                    scanf("%f", &student[i].grade);
+
+                    // opening the file to rewrite
+                    FILE *ufile = fopen("students.csv", "w");
+
+                    // checking if the file pointer is NULL
+                    if(ufile == NULL)
+                    {
+                        perror("Error opening file");
+                        break;
+                    }
+                    // rewriting the present data to the csv
+                    for(int i = 0; i < (*scounter); i++)
+                    {
+                        // printing the student data to the csv
+                        fprintf(ufile, "%d,%s,%.2f\n",
+                            student[i].id, student[i].name, student[i].grade);
+                    }
+                    fclose(ufile);
+                }
+                
+                if(uflag == 0)
+                {
+                    printf("\n************ STUDENT DETAILS *******************\n");
+                    printf("Student ID doesn't exist\n");
+                    printf("************************************************\n");
+                }
+            }
             break;
 
         case 6:
