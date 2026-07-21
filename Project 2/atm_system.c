@@ -66,13 +66,18 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
                 break;
 
             case 2:
-                printf("Login Selected\n");
+                printf("\n+++++ LOGIN MENU +++++\n");
+
+                // initialising login & pin to verify with data
                 int ac_num = 0;
                 int log_pin = 0;
+
+                // asking user inputs
                 printf("Enter Account Number: ");
                 scanf("%d", &ac_num);
                 printf("Enter PIN: ");
                 scanf("%d", &log_pin);
+                printf("%d %d", ac_num, log_pin);
                 break;
 
             case 3:
