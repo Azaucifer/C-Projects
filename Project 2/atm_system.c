@@ -77,7 +77,6 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
                 scanf("%d", &ac_num);
                 printf("Enter PIN: ");
                 scanf("%d", &log_pin);
-                printf("%d %d", ac_num, log_pin);
                 break;
 
             case 3:
