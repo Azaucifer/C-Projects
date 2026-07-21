@@ -37,7 +37,7 @@ int main()
     // display menu to user
     do
     {
-        printf("\n==== Bank Menu ====\n"
+        printf("\n==== BANK ATM MENU ====\n"
                "1. Create new Account\n"
                "2. Login\n"
                "3. Save & Exit\n"
@@ -62,7 +62,7 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
         {
             case 1:
                 // asks user input to create a new account
-                printf("\n==== Create Account ====\n");
+                printf("\n==== CREATE ACCOUNT ====\n");
                 getchar();
                 printf("Enter your name: ");
                 fgets(account[*acounter].name, sizeof(account[*acounter].name), stdin);
@@ -71,11 +71,27 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
                 scanf("%d", &account[*acounter].pin);
                 account[*acounter].balance = 0.00;
                 account[*acounter].accountnum = *accountnum + *acounter;
-                printf("\nCongratulations!\n");
+                printf("\n******************** Congratulations! *********************\n");
                 printf("Dear %s, your account has been successfully created.\n", account[*acounter].name);
-                printf("Ac No: %d\nPIN: %d\nBalance: $%d\n", 
+                printf("Ac No: %d    ***    PIN: %d    ***    Balance: $%.2f\n", 
                         account[*acounter].accountnum, account[*acounter].pin, account[*acounter].balance);
+                printf("***********************************************************\n");
                 (*acounter)++;
+
+                // opening a file to store data
+                FILE *file = fopen("bank.csv", "w");
+                if(file == NULL)
+                {
+                    perror("File cannot be created");
+                    break;
+                }
+                for(int i = 0; i < (*acounter); i++)
+                {
+                    fprintf(file, "%d,%s,%d,%.2f\n", 
+                            account[i].accountnum, account[i].name,
+                            account[i].pin, account[i].balance);
+                }
+                fclose(file);
                 break;
 
             case 2:
