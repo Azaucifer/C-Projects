@@ -17,6 +17,7 @@ typedef struct
 
 // function prototypes
 void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum);
+void createAccount(int caseNum, Account account[], int *acounter, int *accountnum);
 
 /* MAIN PROGRAM */
 
@@ -61,37 +62,7 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
     switch(bchoice)
         {
             case 1:
-                // asks user input to create a new account
-                printf("\n==== CREATE ACCOUNT ====\n");
-                getchar();
-                printf("Enter your name: ");
-                fgets(account[*acounter].name, sizeof(account[*acounter].name), stdin);
-                account[*acounter].name[strlen(account[*acounter].name) - 1] = '\0';
-                printf("Enter PIN: ");
-                scanf("%d", &account[*acounter].pin);
-                account[*acounter].balance = 0.00;
-                account[*acounter].accountnum = *accountnum + *acounter;
-                printf("\n******************** Congratulations! *********************\n");
-                printf("Dear %s, your account has been successfully created.\n", account[*acounter].name);
-                printf("Ac No: %d    ***    PIN: %d    ***    Balance: $%.2f\n", 
-                        account[*acounter].accountnum, account[*acounter].pin, account[*acounter].balance);
-                printf("***********************************************************\n");
-                (*acounter)++;
-
-                // opening a file to store data
-                FILE *file = fopen("bank.csv", "w");
-                if(file == NULL)
-                {
-                    perror("File cannot be created");
-                    break;
-                }
-                for(int i = 0; i < (*acounter); i++)
-                {
-                    fprintf(file, "%d,%s,%d,%.2f\n", 
-                            account[i].accountnum, account[i].name,
-                            account[i].pin, account[i].balance);
-                }
-                fclose(file);
+                createAccount(1,account, *acounter, *accountnum);
                 break;
 
             case 2:
@@ -106,4 +77,40 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
                 printf("Please enter correct choice(1/2/3)\n");
                 break;
         }
+}
+
+// 2. function to create a new account
+void createAccount(int caseNum, Account account[], int *acounter, int *accountnum)
+{
+    // asks user input to create a new account
+    printf("\n==== CREATE ACCOUNT ====\n");
+    getchar();
+    printf("Enter your name: ");
+    fgets(account[*acounter].name, sizeof(account[*acounter].name), stdin);
+    account[*acounter].name[strlen(account[*acounter].name) - 1] = '\0';
+    printf("Enter PIN: ");
+    scanf("%d", &account[*acounter].pin);
+    account[*acounter].balance = 0.00;
+    account[*acounter].accountnum = *accountnum + *acounter;
+    printf("\n****************************** Congratulations! *******************************\n");
+    printf("Dear %s, your account has been successfully created.\n", account[*acounter].name);
+    printf("Ac No: %d    ***    PIN: %d    ***    Balance: $%.2f\n", 
+                account[*acounter].accountnum, account[*acounter].pin, account[*acounter].balance);
+    printf("*******************************************************************************\n");
+    (*acounter)++;
+
+    // opening a file to store data
+    FILE *file = fopen("bank.csv", "w");
+    if(file == NULL)
+    {
+        perror("File cannot be created");
+        return;
+    }
+    for(int i = 0; i < (*acounter); i++)
+    {
+        fprintf(file, "%d,%s,%d,%.2f\n", 
+                    account[i].accountnum, account[i].name,
+                    account[i].pin, account[i].balance);
+    }
+    fclose(file);
 }
