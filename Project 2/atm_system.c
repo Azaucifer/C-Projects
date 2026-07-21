@@ -62,11 +62,17 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
     switch(bchoice)
         {
             case 1:
-                createAccount(1,account, *acounter, *accountnum);
+                createAccount(1,account, acounter, accountnum);
                 break;
 
             case 2:
                 printf("Login Selected\n");
+                int ac_num = 0;
+                int log_pin = 0;
+                printf("Enter Account Number: ");
+                scanf("%d", &ac_num);
+                printf("Enter PIN: ");
+                scanf("%d", &log_pin);
                 break;
 
             case 3:
