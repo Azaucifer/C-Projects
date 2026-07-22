@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -72,22 +73,55 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
                 int ac_num = 0;
                 char log_pin[5] = "";
 
-                // asking user inputs
-                printf("Enter Account Number: ");
+                // setting a flag to check account number
+                int ac_numCheck = 0;
+                while(!ac_numCheck)
+                {
+                    // asking user inputs
+                    printf("Enter Account Number: ");
                 
-                // accepting only 4 digits
-                scanf("%4d", &ac_num);
+                    // accepting only 4 digits
+                    scanf("%4d", &ac_num);
 
-                // clearing the buffer if user enters more than 4 digits
-                while(getchar() != '\n');
-                
-                printf("Enter PIN: ");
-                scanf("%4s", &log_pin);
-                while(getchar() != '\n');
-                printf("%d %s", ac_num, log_pin);
-                
-                // clearing the buffer if user enters more than 4 digits
-                while(getchar() != '\n');
+                    /* TODO: check if acc num exists in database */
+
+                    // clearing the buffer if user enters more than 4 digits
+                    while(getchar() != '\n');
+
+                    if(ac_num < 1001)
+                    {
+                        printf("Error: Account Number not valid!\n");
+                    }
+                    else
+                    {
+                        ac_numCheck = 1;
+                    }
+                }
+
+                int pin_check = 0;
+                while(!pin_check)
+                {
+                    printf("Enter PIN: ");
+                    scanf("%4s", &log_pin);
+
+                    // clearing the buffer if user enters more than 4 digits
+                    while(getchar() != '\n');
+
+                    for(int i = 0; i < 4; i++)
+                    {
+                        if(isdigit(log_pin[i]))
+                        {
+                            pin_check = 1;
+                            continue;
+                        }
+                        else
+                        {
+                            pin_check = 0;
+                            printf("Error: Wrong PIN\n");
+                            break;
+                        }
+                    }
+                }
                 break;
 
             case 3:
