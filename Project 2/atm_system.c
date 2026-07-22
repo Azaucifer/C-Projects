@@ -19,6 +19,7 @@ typedef struct
 // function prototypes
 void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum);
 void createAccount(int caseNum, Account account[], int *acounter, int *accountnum);
+int loadfile(Account account[]);
 
 /* MAIN PROGRAM */
 
@@ -32,6 +33,8 @@ int main()
 
     // initialising account counter to 0
     int acounter = 0;
+
+    acounter = loadfile(account);
 
     // initialising account number to 1001
     int accountnum = 1001;
@@ -206,4 +209,28 @@ void createAccount(int caseNum, Account account[], int *acounter, int *accountnu
                     account[i].pin, account[i].balance);
     }
     fclose(file);
+}
+
+// 3. function to load file to read data
+int loadfile(Account account[])
+{
+    FILE *file = fopen("bank.csv", "r");
+    if(file == NULL)
+    {
+        perror("File does not exist");
+        return;
+    }
+    char buffer[1024];
+    int count = 0;
+    while(fgets(buffer, sizeof(buffer), file) != NULL)
+    {
+        if(sscanf(buffer, "%d,%49[^,],%4[^,],%f", 
+                &account[count].accountnum, &account[count].name, 
+                &account[count].pin, &account[count].balance) == 4)
+        {
+            count++;
+        }
+    }
+    fclose(file);
+    return count;
 }
