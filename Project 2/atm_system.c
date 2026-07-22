@@ -11,7 +11,7 @@ typedef struct
 {
     int accountnum;
     char name[50];
-    int pin;
+    char pin[5];
     float balance;
 } Account;
 
@@ -70,13 +70,24 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
 
                 // initialising login & pin to verify with data
                 int ac_num = 0;
-                int log_pin = 0;
+                char log_pin[5] = "";
 
                 // asking user inputs
                 printf("Enter Account Number: ");
-                scanf("%d", &ac_num);
+                
+                // accepting only 4 digits
+                scanf("%4d", &ac_num);
+
+                // clearing the buffer if user enters more than 4 digits
+                while(getchar() != '\n');
+                
                 printf("Enter PIN: ");
-                scanf("%d", &log_pin);
+                scanf("%4s", &log_pin);
+                while(getchar() != '\n');
+                printf("%d %s", ac_num, log_pin);
+                
+                // clearing the buffer if user enters more than 4 digits
+                while(getchar() != '\n');
                 break;
 
             case 3:
@@ -98,13 +109,51 @@ void createAccount(int caseNum, Account account[], int *acounter, int *accountnu
     printf("Enter your name: ");
     fgets(account[*acounter].name, sizeof(account[*acounter].name), stdin);
     account[*acounter].name[strlen(account[*acounter].name) - 1] = '\0';
-    printf("Enter PIN: ");
-    scanf("%d", &account[*acounter].pin);
+
+    // setting a flag to validate pin
+    int valid = 0;
+    while(!valid)
+    {
+        printf("Enter a 4-digit PIN(0000 - 9999): ");
+
+        // accepts only 4 numerical digits 
+        scanf("%4s", &account[*acounter].pin);
+
+        // clears any extra buffer characters
+        while(getchar() != '\n'); 
+        
+        // checks the length of pin
+        if(strlen(account[*acounter].pin) != 4)
+        {
+            printf("Just enter a 4-digit PIN(for example: 0000 - 9999): ");
+            continue;
+        }
+
+        valid = 1;
+
+        // checking if the 4 digits are numerical
+        for(int i = 0; i < 4; i++)
+        {
+            if(account[*acounter].pin[i] < '0' || account[*acounter].pin[i] > '9')
+            {
+                valid = 0;
+                break;
+            }
+            
+        }
+
+        // printing and error message to inform the user
+        if(!valid)
+        {
+            printf("\nInvalid Input! Only numbers from 0000 to 9999 are allowed!\n");
+        }
+        
+    }
     account[*acounter].balance = 0.00;
     account[*acounter].accountnum = *accountnum + *acounter;
     printf("\n****************************** Congratulations! *******************************\n");
     printf("Dear %s, your account has been successfully created.\n", account[*acounter].name);
-    printf("Ac No: %d    ***    PIN: %d    ***    Balance: $%.2f\n", 
+    printf("Ac No: %d    ***    PIN: %s    ***    Balance: $%.2f\n", 
                 account[*acounter].accountnum, account[*acounter].pin, account[*acounter].balance);
     printf("*******************************************************************************\n");
     (*acounter)++;
@@ -118,7 +167,7 @@ void createAccount(int caseNum, Account account[], int *acounter, int *accountnu
     }
     for(int i = 0; i < (*acounter); i++)
     {
-        fprintf(file, "%d,%s,%d,%.2f\n", 
+        fprintf(file, "%d,%s,%s,%.2f\n", 
                     account[i].accountnum, account[i].name,
                     account[i].pin, account[i].balance);
     }
