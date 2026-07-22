@@ -20,6 +20,7 @@ typedef struct
 void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum);
 void createAccount(int caseNum, Account account[], int *acounter, int *accountnum);
 int loadfile(Account account[]);
+void checkLogin(int caseNum, int *acounter, Account account[]);
 
 /* MAIN PROGRAM */
 
@@ -73,59 +74,8 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
             case 2:
                 printf("\n+++++ LOGIN MENU +++++\n");
 
-                // initialising login & pin to verify with data
-                int ac_num = 0;
-                char log_pin[5] = "";
-
-                // setting a flag to check account number
-                int ac_numCheck = 0;
-                while(!ac_numCheck)
-                {
-                    // asking user inputs
-                    printf("Enter Account Number: ");
-                
-                    // accepting only 4 digits
-                    scanf("%4d", &ac_num);
-
-                    /* TODO: check if acc num exists in database */
-
-                    // clearing the buffer if user enters more than 4 digits
-                    while(getchar() != '\n');
-
-                    if(ac_num < 1001)
-                    {
-                        printf("Error: Account Number not valid!\n");
-                    }
-                    else
-                    {
-                        ac_numCheck = 1;
-                    }
-                }
-
-                int pin_check = 0;
-                while(!pin_check)
-                {
-                    printf("Enter PIN: ");
-                    scanf("%4s", &log_pin);
-
-                    // clearing the buffer if user enters more than 4 digits
-                    while(getchar() != '\n');
-
-                    for(int i = 0; i < 4; i++)
-                    {
-                        if(isdigit(log_pin[i]))
-                        {
-                            pin_check = 1;
-                            continue;
-                        }
-                        else
-                        {
-                            pin_check = 0;
-                            printf("Error: Wrong PIN\n");
-                            break;
-                        }
-                    }
-                }
+                // check account num and pin
+                checkLogin(2, acounter, account);
                 break;
 
             case 3:
@@ -135,7 +85,7 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
             case 4:
                 for (int i = 0; i < *acounter; i++)
                 {
-                    printf("%d, %s, %s, %.2f\n", 
+                    printf("%d, %s, %s, $%.2f\n", 
                         account[i].accountnum, account[i].name, 
                         account[i].pin, account[i].balance);
                 }
@@ -243,4 +193,78 @@ int loadfile(Account account[])
     }
     fclose(file);
     return count;
+}
+
+
+// 4. function to check account num and pin
+void checkLogin(int caseNum, int *acounter, Account account[])
+{
+    // initialising login & pin to verify with data
+    int ac_num = 0;
+    char log_pin[5] = "";
+
+    // setting a flag to check account number
+    int ac_numCheck = 0;
+    while(!ac_numCheck)
+    {
+        // asking user inputs
+        printf("Enter Account Number: ");
+                
+        // accepting only 4 digits
+        scanf("%4d", &ac_num);
+
+        /* TODO: check if acc num exists in database */
+
+        // clearing the buffer if user enters more than 4 digits
+        while(getchar() != '\n');
+
+        if(ac_num < 1001)
+        {
+            printf("Error: Account Number not valid!\n");
+        }
+        else
+        {
+            ac_numCheck = 1;
+        }
+    }
+
+    int ac_numFlag = 0;
+    for(int i = 0; i < (*acounter); i++)
+    {
+        if(ac_num == account[i].accountnum)
+        {
+            ac_numFlag = 1;
+            printf("Welcome %s\n", account[i].name);
+        }
+    }
+    if(ac_numFlag == 0)
+    {
+        printf("Account Number does not exist!\n");
+        return;
+    }
+
+    int pin_check = 0;
+    while(!pin_check)
+    {
+        printf("Enter PIN: ");
+        scanf("%4s", &log_pin);
+
+        // clearing the buffer if user enters more than 4 digits
+        while(getchar() != '\n');
+
+        for(int i = 0; i < 4; i++)
+        {
+            if(isdigit(log_pin[i]))
+            {
+                pin_check = 1;
+                continue;
+            }
+            else
+            {
+                pin_check = 0;
+                printf("Error: Wrong PIN\n");
+                break;
+            }
+        }
+    }
 }
