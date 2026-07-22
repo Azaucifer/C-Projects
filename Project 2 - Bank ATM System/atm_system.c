@@ -227,22 +227,31 @@ void checkLogin(int caseNum, int *acounter, Account account[])
             ac_numCheck = 1;
         }
     }
-
+    
+    // setting a flag to check if account num exists in data
     int ac_numFlag = 0;
+
+    // this stores the value of i from the for loop to compare PIN
+    int user = 0;
+
     for(int i = 0; i < (*acounter); i++)
     {
         if(ac_num == account[i].accountnum)
         {
             ac_numFlag = 1;
             printf("Welcome %s\n", account[i].name);
+            user = i;
         }
     }
+
+    printf("%d", user);
     if(ac_numFlag == 0)
     {
         printf("Account Number does not exist!\n");
         return;
     }
 
+    // checking if the PIN is in correct format
     int pin_check = 0;
     while(!pin_check)
     {
@@ -252,6 +261,7 @@ void checkLogin(int caseNum, int *acounter, Account account[])
         // clearing the buffer if user enters more than 4 digits
         while(getchar() != '\n');
 
+        // checking if PIN is in numerical format
         for(int i = 0; i < 4; i++)
         {
             if(isdigit(log_pin[i]))
@@ -267,4 +277,23 @@ void checkLogin(int caseNum, int *acounter, Account account[])
             }
         }
     }
+
+    // checking if entered PIN matches the account's PIN
+    int log_pinFlag = 0;
+
+    // using user variable to confirm PIN match
+    for(int i = user; i <= (*acounter); i++)
+    {
+        if(log_pin[i] == account[i].pin)
+        {
+            log_pinFlag = 1;
+            printf("Logged in successfully\n");
+        }
+    }
+    if(log_pinFlag == 0)
+    {
+        printf("Error: Wrong PIN entered\n");
+        return;
+    }
+
 }
