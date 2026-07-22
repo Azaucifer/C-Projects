@@ -46,6 +46,7 @@ int main()
                "1. Create new Account\n"
                "2. Login\n"
                "3. Save & Exit\n"
+               "4. Test: See all accounts\n"
                "Please enter a choice: ");
         scanf("%d", &bchoice);
 
@@ -129,6 +130,15 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
 
             case 3:
                 printf("Saved & Exited\n");
+                break;
+
+            case 4:
+                for (int i = 0; i < *acounter; i++)
+                {
+                    printf("%d, %s, %s, %.2f\n", 
+                        account[i].accountnum, account[i].name, 
+                        account[i].pin, account[i].balance);
+                }
                 break;
 
             default:
@@ -218,7 +228,7 @@ int loadfile(Account account[])
     if(file == NULL)
     {
         perror("File does not exist");
-        return;
+        return 0;
     }
     char buffer[1024];
     int count = 0;
