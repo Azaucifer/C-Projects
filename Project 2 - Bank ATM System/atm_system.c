@@ -18,6 +18,7 @@ typedef struct
 
 // function prototypes
 void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum);
+void writeFile(Account account[], int *acounter);
 void createAccount(int caseNum, Account account[], int *acounter, int *accountnum);
 int loadfile(Account account[]);
 void checkLogin(int caseNum, int *acounter, Account account[]);
@@ -155,7 +156,16 @@ void createAccount(int caseNum, Account account[], int *acounter, int *accountnu
                 account[*acounter].accountnum, account[*acounter].pin, account[*acounter].balance);
     printf("*******************************************************************************\n");
     (*acounter)++;
+    
+    // writing data to the file
+    writeFile(account, acounter);
 
+}
+
+
+// 3. function to write to a file
+void writeFile(Account account[], int *acounter)
+{
     // opening a file to store data
     FILE *file = fopen("bank.csv", "w");
     if(file == NULL)
@@ -172,7 +182,8 @@ void createAccount(int caseNum, Account account[], int *acounter, int *accountnu
     fclose(file);
 }
 
-// 3. function to load file to read data
+
+// 4. function to load file to read data
 int loadfile(Account account[])
 {
     FILE *file = fopen("bank.csv", "r");
@@ -197,7 +208,7 @@ int loadfile(Account account[])
 }
 
 
-// 4. function to check account num and pin
+// 5. function to check account num and pin
 void checkLogin(int caseNum, int *acounter, Account account[])
 {
     // initialising login & pin to verify with data
@@ -304,7 +315,7 @@ void checkLogin(int caseNum, int *acounter, Account account[])
 }
 
 
-// 5. function to display menu after successful login and perform banking actions
+// 6. function to display menu after successful login and perform banking actions
 void userMenu(int user, Account account[], int *acounter)
 {
     // initialising user menu choice to 0
@@ -319,14 +330,32 @@ void userMenu(int user, Account account[], int *acounter)
 
         // printf("Uchoice = %d\n", uchoice);
 
+        // added switch statements to navigate the action flow
         switch(uchoice)
         {
             case 1:
-                printf("Check Balance\n");
+                // displays the balance in the account
+                printf("\n********* ACCOUNT BALANCE *********\n");
+                printf("Your current balance is $%.2f", account[user].balance);
+                printf("\n***********************************\n");
                 break;
 
             case 2:
-                printf("Deposit\n");
+                // adds money to the account balance
+                printf("\n****************** DEPOSIT WINDOW ******************\n");
+
+                // initialising deposit to 0
+                float deposit = 0.00f;
+                printf("Enter amount to deposit: $");
+                scanf("%f", &deposit);
+
+                // adding the deposit to user's balance
+                account[user].balance += deposit;
+                printf("$%.2f has been successfully added to your account\n", deposit);
+                printf("***************************************************\n");
+
+                // writing data to the file
+                writeFile(account, acounter);
                 break;
 
             case 3:
