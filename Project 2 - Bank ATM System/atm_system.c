@@ -70,10 +70,12 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
     switch(bchoice)
         {
             case 1:
+                // creates a new account
                 createAccount(1,account, acounter, accountnum);
                 break;
 
             case 2:
+                // login menu for user
                 printf("\n+++++ LOGIN MENU +++++\n");
 
                 // check account num and pin
@@ -81,10 +83,13 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
                 break;
 
             case 3:
+                // saves and exits
                 printf("Saved & Exited\n");
                 break;
 
             case 4:
+                /** this is to view all user details and 
+                 * is used for temporary testing this program */
                 for (int i = 0; i < *acounter; i++)
                 {
                     printf("%d, %s, %s, $%.2f\n", 
@@ -104,9 +109,16 @@ void createAccount(int caseNum, Account account[], int *acounter, int *accountnu
 {
     // asks user input to create a new account
     printf("\n==== CREATE ACCOUNT ====\n");
+
+    // removing any buffer so this runs smoothly
     getchar();
+
     printf("Enter your name: ");
+
+    // storing the name of the user
     fgets(account[*acounter].name, sizeof(account[*acounter].name), stdin);
+
+    // removing any extra buffer after the name
     account[*acounter].name[strlen(account[*acounter].name) - 1] = '\0';
 
     // setting a flag to validate pin
@@ -148,8 +160,14 @@ void createAccount(int caseNum, Account account[], int *acounter, int *accountnu
         }
         
     }
+
+    // initialising balance to 0
     account[*acounter].balance = 0.00;
+
+    // creating a new account number for the user
     account[*acounter].accountnum = *accountnum + *acounter;
+
+    // displaying success message to the user
     printf("\n****************************** Congratulations! *******************************\n");
     printf("Dear %s, your account has been successfully created.\n", account[*acounter].name);
     printf("Ac No: %d    ***    PIN: %s    ***    Balance: $%.2f\n", 
@@ -192,14 +210,22 @@ int loadfile(Account account[])
         perror("File does not exist");
         return 0;
     }
+
+    // creating a buffer to read a line of data
     char buffer[1024];
+
+    // stores the lines aka user data
     int count = 0;
+
+    // checks if read data in buffer is not empty
     while(fgets(buffer, sizeof(buffer), file) != NULL)
     {
+        // reads data in this format
         if(sscanf(buffer, "%d,%49[^,],%4[^,],%f", 
                 &account[count].accountnum, &account[count].name, 
                 &account[count].pin, &account[count].balance) == 4)
-        {
+        {   
+            // incrementing the lines aka users
             count++;
         }
     }
@@ -225,11 +251,10 @@ void checkLogin(int caseNum, int *acounter, Account account[])
         // accepting only 4 digits
         scanf("%4d", &ac_num);
 
-        /* TODO: check if acc num exists in database */
-
         // clearing the buffer if user enters more than 4 digits
         while(getchar() != '\n');
 
+        // checks if account number is not in the series of bank account numbers
         if(ac_num < 1001)
         {
             printf("Error: Account Number not valid!\n");
@@ -243,7 +268,7 @@ void checkLogin(int caseNum, int *acounter, Account account[])
     // setting a flag to check if account num exists in data
     int ac_numFlag = 0;
 
-    // this stores the value of i from the for loop to compare PIN
+    // this variable will store the value of i from the for loop to compare PIN
     int user = 0;
 
     for(int i = 0; i < (*acounter); i++)
@@ -256,7 +281,9 @@ void checkLogin(int caseNum, int *acounter, Account account[])
         }
     }
 
-    printf("user: %d\n", user);
+    // this is for debugging
+    // printf("user: %d\n", user);
+    
     if(ac_numFlag == 0)
     {
         printf("Account Number does not exist!\n");
