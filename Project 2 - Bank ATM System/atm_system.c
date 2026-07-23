@@ -17,11 +17,11 @@ typedef struct
 } Account;
 
 // function prototypes
-void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum, int *uchoice);
+void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum);
 void createAccount(int caseNum, Account account[], int *acounter, int *accountnum);
 int loadfile(Account account[]);
-void checkLogin(int caseNum, int *acounter, Account account[], int *uchoice);
-void userMenu(int user, int *uchoice, Account account[], int *acounter);
+void checkLogin(int caseNum, int *acounter, Account account[]);
+void userMenu(int user, Account account[], int *acounter);
 
 /* MAIN PROGRAM */
 
@@ -32,9 +32,6 @@ int main()
 
     // initialising bank menu choice to 0
     int bchoice = 0;
-
-    // initialising user menu choice to 0
-    int uchoice = 0;
 
     // initialising account counter to 0
     int acounter = 0;
@@ -55,7 +52,7 @@ int main()
                "Please enter a choice: ");
         scanf("%d", &bchoice);
 
-        bankMenu(account, bchoice, &acounter, &accountnum, &uchoice);
+        bankMenu(account, bchoice, &acounter, &accountnum);
     } while(bchoice != 3);
 
     return 0;
@@ -67,7 +64,7 @@ int main()
 /* PROGRAM FUNCTIONS ARE DEFINED HERE */
 
 // 1. function for menu choice
-void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum, int *uchoice)
+void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
 {
     switch(bchoice)
         {
@@ -79,7 +76,7 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum, in
                 printf("\n+++++ LOGIN MENU +++++\n");
 
                 // check account num and pin
-                checkLogin(2, acounter, account, uchoice);
+                checkLogin(2, acounter, account);
                 break;
 
             case 3:
@@ -201,7 +198,7 @@ int loadfile(Account account[])
 
 
 // 4. function to check account num and pin
-void checkLogin(int caseNum, int *acounter, Account account[], int *uchoice)
+void checkLogin(int caseNum, int *acounter, Account account[])
 {
     // initialising login & pin to verify with data
     int ac_num = 0;
@@ -303,14 +300,51 @@ void checkLogin(int caseNum, int *acounter, Account account[], int *uchoice)
     }
 
     // logging the user to their account
-    userMenu(user, uchoice, account, acounter);
+    userMenu(user, account, acounter);
 }
 
 
 // 5. function to display menu after successful login and perform banking actions
-void userMenu(int user, int *uchoice, Account account[], int *acounter)
+void userMenu(int user, Account account[], int *acounter)
 {
-    printf("\n===== ACCOUNT MENU =====\n");
-    printf("1. Check Balance\n2. Deposit\n3. Withdraw\n4. Transfer\n5. Logout\nEnter your choice: ");
-    scanf("%d", &uchoice);
+    // initialising user menu choice to 0
+    int uchoice = 0;
+
+    do
+    {
+        // display the account menu to user and ask for input to perform certain action
+        printf("\n===== ACCOUNT MENU =====\n");
+        printf("1. Check Balance\n2. Deposit\n3. Withdraw\n4. Transfer\n5. Logout\nEnter your choice: ");
+        scanf("%d", &uchoice);
+
+        // printf("Uchoice = %d\n", uchoice);
+
+        switch(uchoice)
+        {
+            case 1:
+                printf("Check Balance\n");
+                break;
+
+            case 2:
+                printf("Deposit\n");
+                break;
+
+            case 3:
+                printf("Withdraw\n");
+                break;
+
+            case 4:
+                printf("Transfer\n");
+                break;
+
+            case 5:
+                printf("Logout\n");
+                break;
+
+            default:
+                printf("Please select 1 - 5 only\n");
+                break;
+        }
+        
+    }while(uchoice != 5);
 }
