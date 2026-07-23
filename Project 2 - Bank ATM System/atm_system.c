@@ -359,7 +359,30 @@ void userMenu(int user, Account account[], int *acounter)
                 break;
 
             case 3:
-                printf("Withdraw\n");
+                // withdraws money from the account balance
+                printf("\n****************** WITHDRAWAL WINDOW ******************\n");
+
+                // initialising withdraw to 0
+                float withdraw = 0.00f;
+                printf("Enter amount to withdraw: $");
+                scanf("%f", &withdraw);
+
+                // checks balance before deducting
+                if(account[user].balance >= withdraw)
+                {
+                    // deducting money from account balance
+                    account[user].balance -= withdraw;
+                    printf("$%.2f has been withdrawn from your account\n", withdraw);
+                    printf("*******************************************************\n");
+                }
+                else
+                {
+                    printf("Insufficient Funds\n");
+                    printf("*******************************************************\n");
+                }
+
+                // writing data to the file
+                writeFile(account, acounter);
                 break;
 
             case 4:
