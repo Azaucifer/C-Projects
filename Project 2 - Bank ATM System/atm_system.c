@@ -84,7 +84,7 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
 
             case 3:
                 // saves and exits
-                printf("Saved & Exited\n");
+                printf("\nGOODBYE & HAPPY BANKING :)\n");
                 break;
 
             case 4:
@@ -283,7 +283,7 @@ void checkLogin(int caseNum, int *acounter, Account account[])
 
     // this is for debugging
     // printf("user: %d\n", user);
-    
+
     if(ac_numFlag == 0)
     {
         printf("Account Number does not exist!\n");
@@ -414,7 +414,68 @@ void userMenu(int user, Account account[], int *acounter)
 
             case 4:
                 // transfers money to a different account
-                printf("Transfer\n");
+                printf("\n****************** TRANSFER WINDOW ******************\n");
+
+                // initialising transfer amount and receiver account number to 0
+                float amt_transfer = 0.00f;
+                int receiver = 0;
+
+                // prompt user for amount
+                printf("Enter Amount to transfer: $");
+                scanf("%f", &amt_transfer);
+
+                // flag to check balance
+                int bal_flag = 0;
+
+                // check if user has sufficient balance
+                if(account[user].balance >= amt_transfer)
+                {
+                    bal_flag = 1;
+                    printf("Transfer of amount $%.2f has been initiated!\n", amt_transfer);
+                }
+                else
+                {
+                    printf("Insufficient Funds\n");
+                    printf("*****************************************************\n");
+                    break;
+                }
+
+                if(bal_flag == 1)
+                {
+                    // flag to check if receiver account exists
+                    int rec_flag = 0;
+
+                    // prompt user for account number
+                    printf("Enter Receiver Account Number: ");
+                    scanf("%d", &receiver);
+
+                    // check if account number exists
+                    for(int i = 0; i < (*acounter); i++)
+                    {
+                        if(receiver == account[i].accountnum)
+                        {
+                            rec_flag = 1;
+                            // add amount to receiver's balance
+                            account[i].balance += amt_transfer;
+                            
+                            // deduct amount from user
+                            account[user].balance -= amt_transfer;
+
+                            printf("Successfully transferred $%.2f to %s\n", amt_transfer, account[i].name);
+                            printf("*****************************************************\n");
+                        }
+                    }
+
+                    // display error if account number not found
+                    if(rec_flag == 0)
+                    {
+                        printf("Error: Account Number: %d does not exist\n", receiver);
+                        printf("*****************************************************\n");
+                    }
+
+                    // write data to the file
+                    writeFile(account, acounter);
+                }
                 break;
 
             case 5:
