@@ -386,11 +386,13 @@ void userMenu(int user, Account account[], int *acounter)
                 break;
 
             case 4:
+                // transfers money to a different account
                 printf("Transfer\n");
                 break;
 
             case 5:
-                printf("Logout\n");
+                // logs out the user
+                printf("\n======LOGGED OUT SUCCESSFULLY ======\n");
                 break;
 
             default:
