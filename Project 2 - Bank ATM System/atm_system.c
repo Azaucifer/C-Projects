@@ -49,7 +49,7 @@ int main()
                "1. Create new Account\n"
                "2. Login\n"
                "3. Save & Exit\n"
-               "4. Test: See all accounts\n"
+               //"4. Test: See all accounts\n"
                "Please enter a choice: ");
         scanf("%d", &bchoice);
 
@@ -87,9 +87,10 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
                 printf("\nGOODBYE & HAPPY BANKING :)\n");
                 break;
 
+            /** this is to view all user details and 
+              * is used for temporary testing this program 
+                 
             case 4:
-                /** this is to view all user details and 
-                 * is used for temporary testing this program */
                 for (int i = 0; i < *acounter; i++)
                 {
                     printf("%d, %s, %s, $%.2f\n", 
@@ -97,7 +98,8 @@ void bankMenu(Account account[], int bchoice, int *acounter, int *accountnum)
                         account[i].pin, account[i].balance);
                 }
                 break;
-
+                */
+                    
             default:
                 printf("Please enter correct choice(1/2/3)\n");
                 break;
