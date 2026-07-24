@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void displayHangman(int wrong);
+int pickWord(int words);
 
 int main()
 {
@@ -16,6 +19,8 @@ int main()
     int wrong = 6;
     displayHangman(wrong);
 
+    // printing a random string from the wordList array
+    printf("%s\n", wordList[pickWord(words)]);
 
     return 0;
 }
@@ -98,4 +103,17 @@ void displayHangman(int wrong)
         printf("       |\n");
         printf("=========\n");
     }
+}
+
+// 2. function to pick a random word from the wordlist
+int pickWord(int words)
+{
+    // seed the random number generator with current time
+    srand(time(NULL));
+
+    // generate random index between 0 to (words - 1)
+    int rand_ind = rand() % words;
+
+    // printf("%d\n", rand_ind);
+    return rand_ind;
 }
