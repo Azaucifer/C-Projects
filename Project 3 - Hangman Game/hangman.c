@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 
+
+// function prototypes
 void displayHangman(int wrong);
 int pickWord(int words);
 
+// main program
 int main()
 {
     // initialising the wordlist for the game
@@ -14,13 +17,16 @@ int main()
     // calculate total number of elements in the array
     int words = sizeof(wordList) / sizeof(wordList[0]);
     printf("%d\n", words);
-    
-    // debugging to display hangman
-    int wrong = 6;
-    displayHangman(wrong);
+
+    // seed the random number generator with current time
+    srand(time(NULL));
 
     // printing a random string from the wordList array
     printf("%s\n", wordList[pickWord(words)]);
+
+    // debugging to display hangman
+    int wrong = 6;
+    displayHangman(wrong);
 
     return 0;
 }
@@ -29,6 +35,7 @@ int main()
 
 
 /* FUNCTIONS USED IN THIS PROGRAM ARE DECLARED HERE*/
+
 
 // 1. function to display the hangman
 void displayHangman(int wrong)
@@ -105,12 +112,10 @@ void displayHangman(int wrong)
     }
 }
 
+
 // 2. function to pick a random word from the wordlist
 int pickWord(int words)
 {
-    // seed the random number generator with current time
-    srand(time(NULL));
-
     // generate random index between 0 to (words - 1)
     int rand_ind = rand() % words;
 
