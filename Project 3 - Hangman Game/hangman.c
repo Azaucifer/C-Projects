@@ -3,6 +3,15 @@
 #include <string.h>
 #include <time.h>
 
+/* This program is a game called Hangman, 
+    Players are given 6 chances to guess the correct word
+    if they guess correctly, the letter is displayed in its position
+    and the hangman stays in its current stage
+    if they have a wrong guess, the hangman stage increases
+    the players are warned when hangman reaches stage 5
+    The player looses when the hangman reaches stage 6
+    The players can play again or exit */
+
 
 // function prototypes
 int displayHangman(int *game, int wrong, int *score, char *pword);
@@ -148,7 +157,7 @@ int pickWord(int words)
     return rand_ind;
 }
 
-// 3. function for guesses
+// 3. function that accepts all the characters guessed by player and controls the main game loop
 void guessWord (char *pword, int len_pword, int *score, int *game)
 {
     char guess[26] = {0};
@@ -185,6 +194,7 @@ void guessWord (char *pword, int len_pword, int *score, int *game)
 
         printf("Guessed Letters: %s\n", guessed);
 
+        // user can type many characters but only the first character is read
         printf("Enter your guess: ");
         scanf("%s", &guess);
 
@@ -198,6 +208,7 @@ void guessWord (char *pword, int len_pword, int *score, int *game)
         int final;
         for(int i = 0; i < len_pword; i++)
         {
+            // this makes sure even if user types multiple characters in guess, only 1st character is considered
             if(pword[i] == guess[0])
             {
                 guessFlag = 1;
