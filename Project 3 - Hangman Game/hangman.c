@@ -5,9 +5,9 @@
 
 
 // function prototypes
-void displayHangman(int wrong);
+int displayHangman(int *game, int wrong, int *score, char *pword);
 int pickWord(int words);
-void guessWord (char *pword, int len_pword);
+void guessWord (char *pword, int len_pword, int *score, int *game);
 
 // main program
 int main()
@@ -23,18 +23,20 @@ int main()
 
 
     // seed the random number generator with current time
-    srand(time(NULL));
+    srand(time(NULL)); 
 
-    // printing a random string from the wordList array
-    char *pword = wordList[pickWord(words)];
+    int score = 0;
 
-    int len_pword = strlen(pword); 
+    int game = 0;
 
-    guessWord(pword,len_pword);
+    do
+    {
+        // printing a random string from the wordList array
+        char *pword = wordList[pickWord(words)];
+        int len_pword = strlen(pword);
+        guessWord(pword,len_pword, &score, &game);
 
-    // debugging to display hangman
-    //int wrong = 6;
-    //displayHangman(wrong);
+    }while(game != 1);
 
     return 0;
 }
@@ -46,11 +48,10 @@ int main()
 
 
 // 1. function to display the hangman
-void displayHangman(int wrong)
+int displayHangman(int *game, int wrong, int *score, char *pword)
 {
     if(wrong == 0)
     {
-        printf("\nHANGMAN 0/6\n");
         printf("   +---+\n");
         printf("   |   |\n");
         printf("       |\n");
@@ -58,10 +59,10 @@ void displayHangman(int wrong)
         printf("       |\n");
         printf("       |\n");
         printf("=========\n");
+        printf("Wrong Guesses: 0/6\n");
     }
     else if(wrong == 1)
     {
-        printf("\nHANGMAN 1/6\n");
         printf("   +---+\n");
         printf("   |   |\n");
         printf("   O   |\n");
@@ -69,10 +70,10 @@ void displayHangman(int wrong)
         printf("       |\n");
         printf("       |\n");
         printf("=========\n");
+        printf("Wrong Guesses: 1/6\n");
     }
     else if(wrong == 2)
     {
-        printf("\nHANGMAN 2/6\n");
         printf("   +---+\n");
         printf("   |   |\n");
         printf("   O   |\n");
@@ -80,10 +81,10 @@ void displayHangman(int wrong)
         printf("       |\n");
         printf("       |\n");
         printf("=========\n");
+        printf("Wrong Guesses: 2/6\n");
     }
     else if(wrong == 3)
     {
-        printf("\nHANGMAN 3/6\n");
         printf("   +---+\n");
         printf("   |   |\n");
         printf("   O   |\n");
@@ -91,10 +92,10 @@ void displayHangman(int wrong)
         printf("       |\n");
         printf("       |\n");
         printf("=========\n");
+        printf("Wrong Guesses: 3/6\n");
     }
     else if(wrong == 4)
     {
-        printf("\nHANGMAN 4/6\n");
         printf("   +---+\n");
         printf("   |   |\n");
         printf("   O   |\n");
@@ -102,10 +103,10 @@ void displayHangman(int wrong)
         printf("       |\n");
         printf("       |\n");
         printf("=========\n");
+        printf("Wrong Guesses: 4/6\n");
     }
     else if(wrong == 5)
     {
-        printf("\nHANGMAN 5/6\n");
         printf("   +---+\n");
         printf("   |   |\n");
         printf("   O   |\n");
@@ -113,10 +114,12 @@ void displayHangman(int wrong)
         printf("  /    |\n");
         printf("       |\n");
         printf("=========\n");
+        printf("Wrong Guesses: 5/6\n");
+        printf("Warning: One more mistake and you lose!!!\n");
     }
     else if(wrong == 6)
     {
-        printf("\nHANGMAN 6/6\n");
+        printf("AAAAAGGHHHH!\n");
         printf("   +---+\n");
         printf("   |   |\n");
         printf("   O   |\n");
@@ -124,8 +127,13 @@ void displayHangman(int wrong)
         printf("  / \\  |\n");
         printf("       |\n");
         printf("=========\n");
-        printf("\nYOU LOST\n");
-        return;
+        printf("Score: %d\n", *score);
+        printf("OH NOO!!! YOU LOST!!!\n");
+        printf("The word was %s\n", pword);
+        printf("Note: 0 = YES!   1 = NO!\n");
+        printf("Do you want to play again?: ");
+        scanf("%d", game);
+        return *game;
     }
 }
 
@@ -141,9 +149,10 @@ int pickWord(int words)
 }
 
 // 3. function for guesses
-void guessWord (char *pword, int len_pword)
+void guessWord (char *pword, int len_pword, int *score, int *game)
 {
     char guess[26] = {0};
+    char guessed[26] = {0};
     int wrong = 0;
     char display[50];
 
@@ -158,22 +167,31 @@ void guessWord (char *pword, int len_pword)
 
     do
     {
-        displayHangman(wrong);
+        displayHangman(game, wrong, score, pword);
 
         // print _ _ _ s based on the word length
         for(int i = 0; i < (len_pword); i++)
         {
-            printf(" %c ", display[i]);
+            printf("%c ", display[i]);
         }
 
         // initialising the last character as null
         display[len_pword] = '\0';
 
         // debugging
-        printf("\n%s\n", pword);
+        //printf("\n%s\n", pword);
+
+        printf("\nScore: %d\n", *score);
+
+        printf("Guessed Letters: %s\n", guessed);
 
         printf("Enter your guess: ");
         scanf("%s", &guess);
+
+        // adding current guess to the guessed array
+        guessed[strlen(guessed)] = guess[0];
+
+        printf("\n");
 
         // finding the location of guessed character in the string
         int guessFlag = 0;
@@ -194,17 +212,23 @@ void guessWord (char *pword, int len_pword)
 
         if(strcmp(display, pword) == 0)
         {
-            printf("\nYOU WIN\n");
+            printf("You guessed %s correctly!\n", pword);
+            printf("YOU WIN\n");
+            (*score)++;
+            printf("Score: %d\n", *score);
+            printf("Note: 0 = YES!   1 = NO!\n");
+            printf("Do you want to play again?: ");
+            scanf("%d", game);
             break;
         }
 
         if(guessFlag == 0)
         {
-            printf("Character not found\n");
+            //printf("Character not found\n");
             wrong++;
         }
     }while(wrong < 6);
 
     if(wrong == 6)
-        displayHangman(6);
+        displayHangman(game, 6, score, pword);
 }
