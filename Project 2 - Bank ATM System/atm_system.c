@@ -5,7 +5,9 @@
 /* This program is a bank atm system, User can create an account
    Login with an auto generated ac no & 4 digit pin, Check their balance
    Deposit/Withdraw money, Transfer money to other accounts
-   Logout, Save and exit,  The data is saved and loaded from a CSV */
+   Logout, Save and exit,  The data is saved and loaded from a CSV 
+   The program currently supports 50 accounts, if any user wishes to increase
+    or decrease then increase the MAX 50 to desired number */
 
 // creating a struct for account details
 typedef struct
@@ -29,7 +31,8 @@ void userMenu(int user, Account account[], int *acounter);
 int main()
 {
     // initialising accounts array to 0
-    Account account[] = {0};
+    #define MAX 50
+    Account account[MAX] = {0};
 
     // initialising bank menu choice to 0
     int bchoice = 0;
