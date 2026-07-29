@@ -31,7 +31,9 @@ int main()
     // main menu
     int menuChoice = 0;
 
-    Tasks task[] = {0};
+    /* task is a pointer that stores the address of 
+    the first dynamically allocated array of Tasks */
+    Tasks *task;
 
     int taskCounter = 0;
 
