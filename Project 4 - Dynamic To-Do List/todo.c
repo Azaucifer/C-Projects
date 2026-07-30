@@ -16,7 +16,7 @@ typedef struct
 } Tasks;
 
 // function prototypes
-void menuResponse(int menuChoice, Tasks task[], int *taskCounter);
+void menuResponse(int menuChoice, Tasks **task, int *taskCounter);
 
 int main()
 {
@@ -33,7 +33,7 @@ int main()
 
     /* task is a pointer that stores the address of 
     the first dynamically allocated array of Tasks */
-    Tasks *task;
+    Tasks *task = NULL;
 
     int taskCounter = 0;
 
@@ -50,7 +50,7 @@ int main()
         scanf("%d", &menuChoice);
         getchar();
 
-        menuResponse(menuChoice, task, &taskCounter);
+        menuResponse(menuChoice, &task, &taskCounter);
     }while(menuChoice != 6);
 
     
@@ -63,37 +63,69 @@ int main()
 /* PROGRAM FUNCTIONS ARE DEFINED HERE */
 
 // 1. function to respond to user's menu choice
-void menuResponse(int menuChoice, Tasks task[], int *taskCounter)
+void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
 {
     switch(menuChoice)
     {
         case 1:
             printf("\nAdd Task selected\n");
 
+            // adding memory to store first task
+            if(*taskCounter == 0)
+            {
+                if((*task) == NULL)
+                {
+                    (*task) = malloc(sizeof(Tasks));
+                    if((*task) == NULL)
+                    {
+                        printf("Memory cannot be allocated to the first task\n");
+                        return;
+                    }
+                }
+            }
+            // increasing the memory dynamically by using realloc
+            else
+            {
+                if((*task) != NULL)
+                {
+                    (*task) = realloc((*task), (*taskCounter + 1) * sizeof(Tasks));
+                    if((*task) == NULL)
+                    {
+                        printf("Memory couldn't be reallocated to the tasks\n");
+                        return;
+                    }
+                }
+            }
+
+
             // storing a temporary description to get the length to allocate memory accordingly
             char tempDescription[256] = "";
-            printf("Enter Description: ");
-            fgets(tempDescription, sizeof(tempDescription), stdin);
-            tempDescription[strlen(tempDescription) - 1] = '\0';
+            do
+            {
+                printf("Enter Description: ");
+                fgets(tempDescription, sizeof(tempDescription), stdin);
+                tempDescription[strlen(tempDescription) - 1] = '\0';
+            }while(strlen(tempDescription) == 0);
+
             int lenDescription = strlen(tempDescription);
             //printf("Length of description: %d\n", lenDescription);
 
             // allocating dynamic memory to store the description
-            task[*taskCounter].description = malloc((lenDescription + 1) * sizeof(char));
-            if(task[*taskCounter].description == NULL)
+            (*task)[*taskCounter].description = malloc((lenDescription + 1) * sizeof(char));
+            if((*task)[*taskCounter].description == NULL)
             {
                 printf("Memory cannot be allocated\n");
                 return;
             }
 
             // copying and pasting description 
-            strcpy(task[*taskCounter].description, tempDescription);
+            strcpy((*task)[*taskCounter].description, tempDescription);
 
-            task[*taskCounter].id = (*taskCounter) + 1;
-            task[*taskCounter].status = 0;
+            (*task)[*taskCounter].id = (*taskCounter) + 1;
+            (*task)[*taskCounter].status = 0;
 
             printf("ID: %d\nDescription: %s\nStatus: %d\n", 
-                task[*taskCounter].id, task[*taskCounter].description, task[*taskCounter].status);
+                (*task)[*taskCounter].id, (*task)[*taskCounter].description, (*task)[*taskCounter].status);
 
             (*taskCounter)++;
             tempDescription[0] = '\0';
@@ -104,7 +136,7 @@ void menuResponse(int menuChoice, Tasks task[], int *taskCounter)
             printf("\nView All Tasks selected\n");
             for(int i = 0; i < (*taskCounter); i++)
             {
-                printf("ID: %d  Task: %s  Status: %d\n", task[i].id, task[i].description, task[i].status);
+                printf("ID: %d  Task: %s  Status: %d\n", (*task)[i].id, (*task)[i].description, (*task)[i].status);
             }
             break;
 
@@ -122,9 +154,14 @@ void menuResponse(int menuChoice, Tasks task[], int *taskCounter)
         
         case 6:
             printf("\nSave & Exit selected\n");
-            // freeing malloc
-            free(task[*taskCounter].description);
-            task[*taskCounter].description = NULL;
+            // freeing malloc of descriptions first then the array itself
+            for(int i = 0; i < (*taskCounter); i++)
+            {
+                free((*task)[i].description);
+                (*task)[i].description = NULL;
+            }
+            free(*task);
+            (*task) = NULL;
             break;
 
         default:
