@@ -18,7 +18,8 @@ typedef struct
 // function prototypes
 void menuResponse(int menuChoice, Tasks **task, int *taskCounter);
 void writeFile(int *taskCounter, Tasks **task);
-int loadfile(Tasks **task, int *taskCounter);
+void loadFile(Tasks **task, int *taskCounter);
+void freeTasks(Tasks **task, int *taskCounter);
 
 int main()
 {
@@ -39,7 +40,7 @@ int main()
 
     int taskCounter = 0;
 
-    taskCounter = loadfile(&task, &taskCounter);
+    loadFile(&task, &taskCounter);
 
     do
     {
@@ -51,7 +52,11 @@ int main()
                "5. Delete all Completed Tasks\n"
                "6. Save & Exit\n"
                "Enter your choice (Ex: 1 to 6): ");
-        scanf("%d", &menuChoice);
+        if(scanf("%d",&menuChoice)!=1)
+        {
+            while(getchar()!='\n');
+            continue;
+        }
         getchar();
 
         menuResponse(menuChoice, &task, &taskCounter);
@@ -77,28 +82,28 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
             // adding memory to store first task
             if(*taskCounter == 0)
             {
-                if((*task) == NULL)
+                Tasks *temp = malloc(sizeof(Tasks));
+
+                if(temp == NULL)
                 {
-                    (*task) = malloc(sizeof(Tasks));
-                    if((*task) == NULL)
-                    {
-                        printf("Memory cannot be allocated to the first task\n");
-                        return;
-                    }
+                    printf("Memory allocation failed\n");
+                    return;
                 }
+
+                *task = temp;
             }
             // increasing the memory dynamically by using realloc
             else
             {
-                if((*task) != NULL)
+                Tasks *temp = realloc((*task), (*taskCounter + 1) * sizeof(Tasks));
+
+                if(temp == NULL)
                 {
-                    (*task) = realloc((*task), (*taskCounter + 1) * sizeof(Tasks));
-                    if((*task) == NULL)
-                    {
-                        printf("Memory couldn't be reallocated to the tasks\n");
-                        return;
-                    }
+                    printf("Memory couldn't be reallocated to the tasks\n");
+                    return;
                 }
+
+                *task = temp;
             }
 
 
@@ -107,15 +112,17 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
             do
             {
                 printf("Enter Description: ");
-                fgets(tempDescription, sizeof(tempDescription), stdin);
-                tempDescription[strlen(tempDescription) - 1] = '\0';
+                if(fgets(tempDescription, sizeof(tempDescription), stdin))
+                {
+                    tempDescription[strcspn(tempDescription, "\n")] = '\0';
+                }
             }while(strlen(tempDescription) == 0);
 
             int lenDescription = strlen(tempDescription);
             //printf("Length of description: %d\n", lenDescription);
 
             // allocating dynamic memory to store the description
-            (*task)[*taskCounter].description = malloc((lenDescription + 1) * sizeof(char));
+            (*task)[*taskCounter].description = malloc(lenDescription + 1);
             if((*task)[*taskCounter].description == NULL)
             {
                 printf("Memory cannot be allocated\n");
@@ -140,9 +147,18 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
         
         case 2:
             printf("\nView All Tasks selected\n");
+            
+            printf("(Note: Status: 0 = Pending & Status: 1 = Completed)\n");
+
+            if(*taskCounter==0)
+            {
+                printf("No tasks available\n");
+                return;
+            }
+
             for(int i = 0; i < (*taskCounter); i++)
             {
-                printf("ID: %d  Task: %s  Status: %d\n", 
+                printf("ID: %d\nTask: %s\nStatus: %d\n\n", 
                     (*task)[i].id, (*task)[i].description, (*task)[i].status);
             }
             break;
@@ -161,14 +177,7 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
         
         case 6:
             printf("\nSave & Exit selected\n");
-            // freeing malloc of descriptions first then the array itself
-            for(int i = 0; i < (*taskCounter); i++)
-            {
-                free((*task)[i].description);
-                (*task)[i].description = NULL;
-            }
-            free(*task);
-            (*task) = NULL;
+            freeTasks(task, taskCounter);
             break;
 
         default:
@@ -178,7 +187,25 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
 }
 
 
-// 2. function to write to a file
+// 2. function to free all dynamically allocated memory
+void freeTasks(Tasks **task, int *taskCounter)
+{
+    // free every task description
+    for(int i = 0; i < *taskCounter; i++)
+    {
+        free((*task)[i].description);
+        (*task)[i].description = NULL;
+    }
+
+    // free the task array
+    free(*task);
+
+    // reset pointer and counter
+    *task = NULL;
+    *taskCounter = 0;
+}
+
+// 3. function to write to a file
 void writeFile(int *taskCounter, Tasks **task)
 {
     FILE *file = fopen("todo.txt", "w");
@@ -189,22 +216,22 @@ void writeFile(int *taskCounter, Tasks **task)
     }
     for(int i = 0; i < (*taskCounter); i++)
     {
-        fprintf(file, "%d ~ %s ~ %d\n", 
+        fprintf(file, "%d~%s~%d\n", 
             (*task)[i].id, (*task)[i].description, (*task)[i].status);
     }
     fclose(file);
 }
 
 
-// 3. function to load file to read data
-int loadfile(Tasks **task, int *taskCounter)
+// 4. function to load tasks from file
+void loadFile(Tasks **task, int *taskCounter)
 {
     FILE *file = fopen("todo.txt", "r");
 
     if(file == NULL)
     {
         printf("No existing todo file found. Starting fresh.\n");
-        return 0;
+        return;
     }
 
     char buffer[1024];
@@ -215,19 +242,15 @@ int loadfile(Tasks **task, int *taskCounter)
         int status;
         char tempDescription[256];
 
+
         // extract data from file
-        if(sscanf(buffer, "%d ~ %255[^~] ~ %d", 
-                  &id, tempDescription, &status) == 3)
+        if(sscanf(buffer, "%d~%255[^~]~%d",
+                  &id,
+                  tempDescription,
+                  &status) == 3)
         {
 
-            // remove possible space before/after description
-            if(tempDescription[0] == ' ')
-            {
-                memmove(tempDescription, tempDescription + 1, strlen(tempDescription));
-            }
-
-
-            // first task
+            // allocate memory for first task
             if(*taskCounter == 0)
             {
                 *task = malloc(sizeof(Tasks));
@@ -236,21 +259,27 @@ int loadfile(Tasks **task, int *taskCounter)
                 {
                     printf("Memory allocation failed\n");
                     fclose(file);
-                    return 0;
+                    return;
                 }
             }
 
-            // more tasks
+            // increase array size for next tasks
             else
             {
-                Tasks *temp = realloc(*task, (*taskCounter + 1) * sizeof(Tasks));
+                Tasks *temp = realloc(
+                    *task,
+                    (*taskCounter + 1) * sizeof(Tasks)
+                );
+
 
                 if(temp == NULL)
                 {
                     printf("Memory reallocation failed\n");
+
                     fclose(file);
-                    return *taskCounter;
+                    return;
                 }
+
 
                 *task = temp;
             }
@@ -259,29 +288,47 @@ int loadfile(Tasks **task, int *taskCounter)
             // allocate memory for description
             (*task)[*taskCounter].description = malloc(strlen(tempDescription) + 1);
 
+
             if((*task)[*taskCounter].description == NULL)
             {
                 printf("Description memory allocation failed\n");
+
+
+                // cleanup previous memory
+                for(int i = 0; i < *taskCounter; i++)
+                {
+                    free((*task)[i].description);
+                }
+
+
+                free(*task);
+                *task = NULL;
+                *taskCounter = 0;
+
+
                 fclose(file);
-                return *taskCounter;
+                return;
             }
 
 
-            // copy description
-            strcpy((*task)[*taskCounter].description, tempDescription);
+            // copy description into allocated memory
+            strcpy(
+                (*task)[*taskCounter].description,
+                tempDescription
+            );
 
 
-            // store remaining values
+            // store remaining data
             (*task)[*taskCounter].id = id;
+
             (*task)[*taskCounter].status = status;
 
 
-            // increase task count
+            // increase number of tasks
             (*taskCounter)++;
         }
     }
 
-    fclose(file);
 
-    return (*taskCounter);
+    fclose(file);
 }
