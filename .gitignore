@@ -11,6 +11,9 @@
 # CSV files (if generated)
 *.csv
 
+# TXT files (if generated)
+*.txt
+
 # IDE files
 .vscode/
 

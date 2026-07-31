@@ -17,6 +17,8 @@ typedef struct
 
 // function prototypes
 void menuResponse(int menuChoice, Tasks **task, int *taskCounter);
+void writeFile(int *taskCounter, Tasks **task);
+int loadfile(Tasks **task, int *taskCounter);
 
 int main()
 {
@@ -36,6 +38,8 @@ int main()
     Tasks *task = NULL;
 
     int taskCounter = 0;
+
+    taskCounter = loadfile(&task, &taskCounter);
 
     do
     {
@@ -129,6 +133,8 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
 
             (*taskCounter)++;
             tempDescription[0] = '\0';
+
+            writeFile(taskCounter, task);
             
             break;
         
@@ -136,7 +142,8 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
             printf("\nView All Tasks selected\n");
             for(int i = 0; i < (*taskCounter); i++)
             {
-                printf("ID: %d  Task: %s  Status: %d\n", (*task)[i].id, (*task)[i].description, (*task)[i].status);
+                printf("ID: %d  Task: %s  Status: %d\n", 
+                    (*task)[i].id, (*task)[i].description, (*task)[i].status);
             }
             break;
 
@@ -168,4 +175,113 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
             printf("\nPlease enter 1 to 6 only\n");
             break;
     }
+}
+
+
+// 2. function to write to a file
+void writeFile(int *taskCounter, Tasks **task)
+{
+    FILE *file = fopen("todo.txt", "w");
+    if(file == NULL)
+    {
+        perror("File cannot be created\n");
+        return;
+    }
+    for(int i = 0; i < (*taskCounter); i++)
+    {
+        fprintf(file, "%d ~ %s ~ %d\n", 
+            (*task)[i].id, (*task)[i].description, (*task)[i].status);
+    }
+    fclose(file);
+}
+
+
+// 3. function to load file to read data
+int loadfile(Tasks **task, int *taskCounter)
+{
+    FILE *file = fopen("todo.txt", "r");
+
+    if(file == NULL)
+    {
+        printf("No existing todo file found. Starting fresh.\n");
+        return 0;
+    }
+
+    char buffer[1024];
+
+    while(fgets(buffer, sizeof(buffer), file) != NULL)
+    {
+        int id;
+        int status;
+        char tempDescription[256];
+
+        // extract data from file
+        if(sscanf(buffer, "%d ~ %255[^~] ~ %d", 
+                  &id, tempDescription, &status) == 3)
+        {
+
+            // remove possible space before/after description
+            if(tempDescription[0] == ' ')
+            {
+                memmove(tempDescription, tempDescription + 1, strlen(tempDescription));
+            }
+
+
+            // first task
+            if(*taskCounter == 0)
+            {
+                *task = malloc(sizeof(Tasks));
+
+                if(*task == NULL)
+                {
+                    printf("Memory allocation failed\n");
+                    fclose(file);
+                    return 0;
+                }
+            }
+
+            // more tasks
+            else
+            {
+                Tasks *temp = realloc(*task, (*taskCounter + 1) * sizeof(Tasks));
+
+                if(temp == NULL)
+                {
+                    printf("Memory reallocation failed\n");
+                    fclose(file);
+                    return *taskCounter;
+                }
+
+                *task = temp;
+            }
+
+
+            // allocate memory for description
+            (*task)[*taskCounter].description = malloc(strlen(tempDescription) + 1);
+
+            if((*task)[*taskCounter].description == NULL)
+            {
+                printf("Description memory allocation failed\n");
+                fclose(file);
+                return *taskCounter;
+            }
+
+
+            // copy description
+            strcpy((*task)[*taskCounter].description, tempDescription);
+
+
+            // store remaining values
+            (*task)[*taskCounter].id = id;
+            (*task)[*taskCounter].status = status;
+
+
+            // increase task count
+            (*taskCounter)++;
+        }
+    }
+
+    fclose(file);
+
+    return (*taskCounter);
 }
