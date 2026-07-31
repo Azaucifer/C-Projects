@@ -1,0 +1,11 @@
+# C source files always use LF
+*.c text eol=lf
+*.h text eol=lf
+
+# C source files
+*.c text eol=lf
+*.h text eol=lf
+
+# Text files
+*.md text
+*.txt text
