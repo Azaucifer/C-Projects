@@ -24,6 +24,7 @@ void addTask(Tasks **task, int *taskCounter);
 void viewTasks(Tasks **task, int *taskCounter);
 void markCompleted(Tasks **task, int *taskCounter);
 void markIncomplete(Tasks **task, int *taskCounter);
+void deleteTask(Tasks **task, int *taskCounter);
 
 int main()
 {
@@ -112,7 +113,10 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
             break;
         
         case 5:
-            printf("\nDelete Task selected\n");
+            printf("\n===DELETE TASK ===\n");
+
+            deleteTask(task,taskCounter);
+            
             break;
 
         case 6:
@@ -402,5 +406,37 @@ void markIncomplete(Tasks **task, int *taskCounter)
     if(!taskFlag)
     {
         printf("No Task found\n");
+    }
+}
+
+void deleteTask(Tasks **task, int *taskCounter)
+{
+    int taskID = 0;
+    printf("Enter task ID: ");
+    scanf("%d", &taskID);
+    int taskFlag = 0;
+
+    for(int i = 0; i < (*taskCounter); i++)
+    {
+        if(taskID == (*task)[i].id)
+        {
+            taskFlag = 1;
+            printf("Deleted Task %d: %s\n", (*task)[i].id, (*task)[i].description);
+
+            for(int j = i; j < (*taskCounter); j++)
+            {
+                (*task)[j] = (*task)[j + 1];
+                (*task)[j].id -= 1;
+            }
+
+            (*taskCounter)--;
+
+            writeFile(taskCounter, task);
+        }
+    }
+
+    if(!taskFlag)
+    {
+        printf("Task %d does not exist.\n", taskID);
     }
 }
