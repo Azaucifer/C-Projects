@@ -25,6 +25,7 @@ void viewTasks(Tasks **task, int *taskCounter);
 void markCompleted(Tasks **task, int *taskCounter);
 void markIncomplete(Tasks **task, int *taskCounter);
 void deleteTask(Tasks **task, int *taskCounter);
+void deleteCompleted(Tasks **task, int *taskCounter);
 
 int main()
 {
@@ -75,6 +76,7 @@ int main()
 
 /* PROGRAM FUNCTIONS ARE DEFINED HERE */
 
+
 // 1. function to respond to user's menu choice
 void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
 {
@@ -116,11 +118,14 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
             printf("\n===DELETE TASK ===\n");
 
             deleteTask(task,taskCounter);
-            
+
             break;
 
         case 6:
-            printf("\nDelete all Completed Tasks selected\n");
+            printf("\n=== DELETE ALL COMPLETED TASKS ===\n");
+
+            deleteCompleted(task, taskCounter);
+
             break;
         
         case 7:
@@ -153,6 +158,7 @@ void freeTasks(Tasks **task, int *taskCounter)
     *taskCounter = 0;
 }
 
+
 // 3. function to write to a file
 void writeFile(int *taskCounter, Tasks **task)
 {
@@ -178,7 +184,7 @@ void loadFile(Tasks **task, int *taskCounter)
 
     if(file == NULL)
     {
-        printf("No existing todo file found. Starting fresh.\n");
+        //printf("No existing todo file found. Starting fresh.\n");
         return;
     }
 
@@ -281,6 +287,8 @@ void loadFile(Tasks **task, int *taskCounter)
     fclose(file);
 }
 
+
+// 5. function to add tasks
 void addTask(Tasks **task, int *taskCounter)
 {
     // adding memory to store first task
@@ -346,6 +354,8 @@ void addTask(Tasks **task, int *taskCounter)
     tempDescription[0] = '\0';
 }
 
+
+// 6. function to view tasks
 void viewTasks(Tasks **task, int *taskCounter)
 {
     printf("(Note: Status: 0 = Pending & Status: 1 = Completed)\n");
@@ -363,6 +373,8 @@ void viewTasks(Tasks **task, int *taskCounter)
     }
 }
 
+
+// 7. function to mark task as completed
 void markCompleted(Tasks **task, int *taskCounter)
 {
     int taskID = 0;
@@ -375,7 +387,7 @@ void markCompleted(Tasks **task, int *taskCounter)
         if(taskID == (*task)[i].id)
         {
             taskFlag = 1;
-            printf("Alert: Task %d marked as completed!\n", (*task)[i].id);
+            printf("Alert: Task %d: %s is marked as completed!\n", (*task)[i].id, (*task)[i].description);
             (*task)[i].status = 1;
         }
     }
@@ -386,6 +398,8 @@ void markCompleted(Tasks **task, int *taskCounter)
     }
 }
 
+
+// 8. function to mark task as incomplete
 void markIncomplete(Tasks **task, int *taskCounter)
 {
     int taskID = 0;
@@ -398,7 +412,7 @@ void markIncomplete(Tasks **task, int *taskCounter)
         if(taskID == (*task)[i].id)
         {
             taskFlag = 1;
-            printf("Alert: Task %d marked as incomplete!\n", (*task)[i].id);
+            printf("Alert: Task %d: %s is marked as incomplete!\n", (*task)[i].id, (*task)[i].description);
             (*task)[i].status = 0;
         }
     }
@@ -409,6 +423,8 @@ void markIncomplete(Tasks **task, int *taskCounter)
     }
 }
 
+
+// 9. function to delete a single task
 void deleteTask(Tasks **task, int *taskCounter)
 {
     int taskID = 0;
@@ -423,15 +439,38 @@ void deleteTask(Tasks **task, int *taskCounter)
             taskFlag = 1;
             printf("Deleted Task %d: %s\n", (*task)[i].id, (*task)[i].description);
 
-            for(int j = i; j < (*taskCounter); j++)
+            // free the description memory before overwriting
+            free((*task)[i].description);
+
+            // shifting remaining tasks left
+            for(int j = i; j < (*taskCounter) - 1; j++)
             {
                 (*task)[j] = (*task)[j + 1];
-                (*task)[j].id -= 1;
+
+                // reassigning IDs
+                (*task)[j].id = j + 1;
             }
 
             (*taskCounter)--;
 
+            // reducing the array
+            if (*taskCounter == 0)
+            {
+                free(*task);
+                *task = NULL;
+            }
+            else
+            {
+                Tasks *temp = realloc(*task, (*taskCounter) * sizeof(Tasks));
+                if (temp == NULL)
+                {
+                    return;
+                }
+                *task = temp;
+            }
+
             writeFile(taskCounter, task);
+            break;
         }
     }
 
@@ -439,4 +478,64 @@ void deleteTask(Tasks **task, int *taskCounter)
     {
         printf("Task %d does not exist.\n", taskID);
     }
+}
+
+
+// 10. function to delete all completed tasks
+void deleteCompleted(Tasks **task, int *taskCounter)
+{
+    int taskFlag = 0;
+
+    for (int i = 0; i < *taskCounter; i++)
+    {
+        if ((*task)[i].status == 1)
+        {
+            taskFlag = 1;
+            printf("Task %d: %s is marked completed and will be deleted\n", 
+                   (*task)[i].id, (*task)[i].description);
+
+            // free the description memory to avoid leaks
+            free((*task)[i].description);
+
+            // shift all remaining tasks left
+            for (int j = i; j < *taskCounter - 1; j++)
+            {
+                (*task)[j] = (*task)[j + 1];
+
+                // reassigning IDs
+                (*task)[j].id = j + 1;
+            }
+
+            (*taskCounter)--;
+
+            // staying at the same index because a new task shifted into this position
+            i--;
+
+            // reallocating memory to reduce the array
+            if (*taskCounter == 0)
+            {
+                free(*task);
+                *task = NULL;
+            }
+            else
+            {
+                Tasks *temp = realloc(*task, (*taskCounter) * sizeof(Tasks));
+                if (temp == NULL)
+                {
+                    // if realloc fails, keep the original pointer
+                    return;
+                }
+                *task = temp;
+            }
+        }
+    }
+
+    if (!taskFlag)
+    {
+        printf("No completed tasks to delete.\n");
+        return;
+    }
+
+    writeFile(taskCounter, task);
+    printf("All completed tasks have been deleted.\n");
 }
