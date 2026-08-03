@@ -21,6 +21,7 @@ void writeFile(int *taskCounter, Tasks **task);
 void loadFile(Tasks **task, int *taskCounter);
 void freeTasks(Tasks **task, int *taskCounter);
 void addTask(Tasks **task, int *taskCounter);
+void viewTasks(Tasks **task, int *taskCounter);
 
 int main()
 {
@@ -86,19 +87,8 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
         case 2:
             printf("\n=== VIEW ALL TASKS ===\n");
             
-            printf("(Note: Status: 0 = Pending & Status: 1 = Completed)\n");
-
-            if(*taskCounter==0)
-            {
-                printf("No tasks available\n");
-                return;
-            }
-
-            for(int i = 0; i < (*taskCounter); i++)
-            {
-                printf("ID: %d\nTask: %s\nStatus: %d\n\n", 
-                    (*task)[i].id, (*task)[i].description, (*task)[i].status);
-            }
+            viewTasks(task, taskCounter);
+            
             break;
 
         case 3:
@@ -337,4 +327,18 @@ void addTask(Tasks **task, int *taskCounter)
 }
 
 void viewTasks(Tasks **task, int *taskCounter)
-{}
+{
+    printf("(Note: Status: 0 = Pending & Status: 1 = Completed)\n");
+
+    if(*taskCounter==0)
+    {
+        printf("No tasks available\n");
+        return;
+    }
+
+    for(int i = 0; i < (*taskCounter); i++)
+    {
+        printf("ID: %d\nTask: %s\nStatus: %d\n\n", 
+            (*task)[i].id, (*task)[i].description, (*task)[i].status);
+    }
+}
