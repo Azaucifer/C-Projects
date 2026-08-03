@@ -29,11 +29,6 @@ void deleteCompleted(Tasks **task, int *taskCounter);
 
 int main()
 {
-    /*TODO: mark task as complete
-            delete task
-            delete all completed tasks
-            save to a file
-            load from a file */
     
     // main menu
     int menuChoice = 0;
