@@ -23,6 +23,7 @@ void freeTasks(Tasks **task, int *taskCounter);
 void addTask(Tasks **task, int *taskCounter);
 void viewTasks(Tasks **task, int *taskCounter);
 void markCompleted(Tasks **task, int *taskCounter);
+void markIncomplete(Tasks **task, int *taskCounter);
 
 int main()
 {
@@ -49,10 +50,11 @@ int main()
         printf("1. Add Task\n"
                "2. View All Tasks\n"
                "3. Mark Task as Completed\n"
-               "4. Delete Task\n"
-               "5. Delete all Completed Tasks\n"
-               "6. Save & Exit\n"
-               "Enter your choice (Ex: 1 to 6): ");
+               "4. Mark Task as Incomplete\n"
+               "5. Delete Task\n"
+               "6. Delete all Completed Tasks\n"
+               "7. Save & Exit\n"
+               "Enter your choice (Ex: 1 to 7): ");
         if(scanf("%d",&menuChoice)!=1)
         {
             while(getchar()!='\n');
@@ -61,7 +63,7 @@ int main()
         getchar();
 
         menuResponse(menuChoice, &task, &taskCounter);
-    }while(menuChoice != 6);
+    }while(menuChoice != 7);
 
     
     return 0;
@@ -99,22 +101,31 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
             writeFile(taskCounter, task);
 
             break;
-        
+
         case 4:
+            printf("\n=== MARK TASK AS INCOMPLETE ===\n");
+
+            // if user marks a task as completed by mistake then this feature helps to undo it
+            markIncomplete(task, taskCounter);
+            writeFile(taskCounter, task);
+
+            break;
+        
+        case 5:
             printf("\nDelete Task selected\n");
             break;
 
-        case 5:
+        case 6:
             printf("\nDelete all Completed Tasks selected\n");
             break;
         
-        case 6:
+        case 7:
             printf("\nSave & Exit selected\n");
             freeTasks(task, taskCounter);
             break;
 
         default:
-            printf("\nPlease enter 1 to 6 only\n");
+            printf("\nPlease enter 1 to 7 only\n");
             break;
     }
 }
@@ -362,6 +373,29 @@ void markCompleted(Tasks **task, int *taskCounter)
             taskFlag = 1;
             printf("Alert: Task %d marked as completed!\n", (*task)[i].id);
             (*task)[i].status = 1;
+        }
+    }
+
+    if(!taskFlag)
+    {
+        printf("No Task found\n");
+    }
+}
+
+void markIncomplete(Tasks **task, int *taskCounter)
+{
+    int taskID = 0;
+    printf("Enter task ID: ");
+    scanf("%d", &taskID);
+
+    int taskFlag = 0;
+    for(int i = 0; i < (*taskCounter); i++)
+    {
+        if(taskID == (*task)[i].id)
+        {
+            taskFlag = 1;
+            printf("Alert: Task %d marked as incomplete!\n", (*task)[i].id);
+            (*task)[i].status = 0;
         }
     }
 
