@@ -20,12 +20,11 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter);
 void writeFile(int *taskCounter, Tasks **task);
 void loadFile(Tasks **task, int *taskCounter);
 void freeTasks(Tasks **task, int *taskCounter);
+void addTask(Tasks **task, int *taskCounter);
 
 int main()
 {
-    /*TODO: add task
-            view all tasks
-            mark task as complete
+    /*TODO: mark task as complete
             delete task
             delete all completed tasks
             save to a file
@@ -77,76 +76,15 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
     switch(menuChoice)
     {
         case 1:
-            printf("\nAdd Task selected\n");
+            printf("\n=== ADD TASK ===\n");
 
-            // adding memory to store first task
-            if(*taskCounter == 0)
-            {
-                Tasks *temp = malloc(sizeof(Tasks));
-
-                if(temp == NULL)
-                {
-                    printf("Memory allocation failed\n");
-                    return;
-                }
-
-                *task = temp;
-            }
-            // increasing the memory dynamically by using realloc
-            else
-            {
-                Tasks *temp = realloc((*task), (*taskCounter + 1) * sizeof(Tasks));
-
-                if(temp == NULL)
-                {
-                    printf("Memory couldn't be reallocated to the tasks\n");
-                    return;
-                }
-
-                *task = temp;
-            }
-
-
-            // storing a temporary description to get the length to allocate memory accordingly
-            char tempDescription[256] = "";
-            do
-            {
-                printf("Enter Description: ");
-                if(fgets(tempDescription, sizeof(tempDescription), stdin))
-                {
-                    tempDescription[strcspn(tempDescription, "\n")] = '\0';
-                }
-            }while(strlen(tempDescription) == 0);
-
-            int lenDescription = strlen(tempDescription);
-            //printf("Length of description: %d\n", lenDescription);
-
-            // allocating dynamic memory to store the description
-            (*task)[*taskCounter].description = malloc(lenDescription + 1);
-            if((*task)[*taskCounter].description == NULL)
-            {
-                printf("Memory cannot be allocated\n");
-                return;
-            }
-
-            // copying and pasting description 
-            strcpy((*task)[*taskCounter].description, tempDescription);
-
-            (*task)[*taskCounter].id = (*taskCounter) + 1;
-            (*task)[*taskCounter].status = 0;
-
-            printf("ID: %d\nDescription: %s\nStatus: %d\n", 
-                (*task)[*taskCounter].id, (*task)[*taskCounter].description, (*task)[*taskCounter].status);
-
-            (*taskCounter)++;
-            tempDescription[0] = '\0';
-
+            addTask(task, taskCounter);
             writeFile(taskCounter, task);
             
             break;
         
         case 2:
-            printf("\nView All Tasks selected\n");
+            printf("\n=== VIEW ALL TASKS ===\n");
             
             printf("(Note: Status: 0 = Pending & Status: 1 = Completed)\n");
 
@@ -332,3 +270,71 @@ void loadFile(Tasks **task, int *taskCounter)
 
     fclose(file);
 }
+
+void addTask(Tasks **task, int *taskCounter)
+{
+    // adding memory to store first task
+    if(*taskCounter == 0)
+    {
+        Tasks *temp = malloc(sizeof(Tasks));
+
+        if(temp == NULL)
+        {
+            printf("Memory allocation failed\n");
+            return;
+        }
+
+        *task = temp;
+    }
+    // increasing the memory dynamically by using realloc
+    else
+    {
+        Tasks *temp = realloc((*task), (*taskCounter + 1) * sizeof(Tasks));
+
+        if(temp == NULL)
+        {
+            printf("Memory couldn't be reallocated to the tasks\n");
+            return;
+        }
+
+        *task = temp;
+    }
+
+
+    // storing a temporary description to get the length to allocate memory accordingly
+    char tempDescription[256] = "";
+    do
+    {
+        printf("Enter Description: ");
+        if(fgets(tempDescription, sizeof(tempDescription), stdin))
+        {
+            tempDescription[strcspn(tempDescription, "\n")] = '\0';
+        }
+    }while(strlen(tempDescription) == 0);
+
+    int lenDescription = strlen(tempDescription);
+    //printf("Length of description: %d\n", lenDescription);
+
+    // allocating dynamic memory to store the description
+    (*task)[*taskCounter].description = malloc(lenDescription + 1);
+    if((*task)[*taskCounter].description == NULL)
+    {
+        printf("Memory cannot be allocated\n");
+        return;
+    }
+
+    // copying and pasting description 
+    strcpy((*task)[*taskCounter].description, tempDescription);
+
+    (*task)[*taskCounter].id = (*taskCounter) + 1;
+    (*task)[*taskCounter].status = 0;
+
+    printf("ID: %d\nDescription: %s\nStatus: %d\n", 
+        (*task)[*taskCounter].id, (*task)[*taskCounter].description, (*task)[*taskCounter].status);
+
+    (*taskCounter)++;
+    tempDescription[0] = '\0';
+}
+
+void viewTasks(Tasks **task, int *taskCounter)
+{}
