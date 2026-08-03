@@ -22,6 +22,7 @@ void loadFile(Tasks **task, int *taskCounter);
 void freeTasks(Tasks **task, int *taskCounter);
 void addTask(Tasks **task, int *taskCounter);
 void viewTasks(Tasks **task, int *taskCounter);
+void markCompleted(Tasks **task, int *taskCounter);
 
 int main()
 {
@@ -88,11 +89,15 @@ void menuResponse(int menuChoice, Tasks **task, int *taskCounter)
             printf("\n=== VIEW ALL TASKS ===\n");
             
             viewTasks(task, taskCounter);
-            
+
             break;
 
         case 3:
-            printf("\nMark Task as Completed selected\n");
+            printf("\n=== MARK TASK AS COMPLETED ===\n");
+
+            markCompleted(task, taskCounter);
+            writeFile(taskCounter, task);
+
             break;
         
         case 4:
@@ -340,5 +345,28 @@ void viewTasks(Tasks **task, int *taskCounter)
     {
         printf("ID: %d\nTask: %s\nStatus: %d\n\n", 
             (*task)[i].id, (*task)[i].description, (*task)[i].status);
+    }
+}
+
+void markCompleted(Tasks **task, int *taskCounter)
+{
+    int taskID = 0;
+    printf("Enter task ID: ");
+    scanf("%d", &taskID);
+
+    int taskFlag = 0;
+    for(int i = 0; i < (*taskCounter); i++)
+    {
+        if(taskID == (*task)[i].id)
+        {
+            taskFlag = 1;
+            printf("Alert: Task %d marked as completed!\n", (*task)[i].id);
+            (*task)[i].status = 1;
+        }
+    }
+
+    if(!taskFlag)
+    {
+        printf("No Task found\n");
     }
 }
