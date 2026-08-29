@@ -271,7 +271,7 @@ Through this project, I practiced:
 
 **Syed Shams Junaid**
 
-🔗 GitHub: [@Azaucifer](https://github.com/Azaucifer)
+🔗 GitHub: [Azaucifer](https://github.com/Azaucifer)
 
 ---
 
