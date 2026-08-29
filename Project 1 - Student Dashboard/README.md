@@ -53,7 +53,7 @@ When the program starts, the following menu is displayed:
 3. Search Student by ID
 4. Delete Student by ID
 5. Update Grade by ID
-6. Save & Exit
+6. Exit
 Please Enter your choice:
 ```
 
@@ -69,7 +69,7 @@ The user enters:
 * 👤 Student name
 * 📊 Grade percentage
 
-The new record is added to the in-memory student array and stored in `students.csv`.
+The new record is added to the in-memory student array and saved to `students.csv`.
 
 ### 2️⃣ View All Students
 
@@ -110,9 +110,11 @@ The user enters a student ID and provides a new grade.
 
 The updated student data is then written back to `students.csv`.
 
-### 6️⃣ 🚪 Save & Exit
+### 6️⃣ 🚪 Exit
 
 The program exits after displaying a confirmation message.
+
+> 💡 Student data is saved during add, update, and delete operations.
 
 ---
 
@@ -143,7 +145,7 @@ Changes such as deleting or updating records cause the CSV file to be rewritten 
 ```text
 student-dashboard/
 │
-├── 📝 student_dashboard.c
+├── 📝 student_system.c
 ├── 📊 students.csv
 └── 📖 README.md
 ```
@@ -193,19 +195,19 @@ This project was built to practice fundamental C programming concepts:
 ### 🔨 Compile with GCC
 
 ```bash
-gcc student_dashboard.c -o student_dashboard
+gcc student_system.c -o student_system
 ```
 
 ### 🪟 Windows
 
 ```bash
-student_dashboard.exe
+student_system.exe
 ```
 
 ### 🐧 Linux / 🍎 macOS
 
 ```bash
-./student_dashboard
+./student_system
 ```
 
 ---
@@ -214,7 +216,7 @@ student_dashboard.exe
 
 As a console-based learning project, it currently has some limitations:
 
-* 👥 Maximum of **100 students** (but you can increase/decrease the student array)
+* 👥 Maximum of **100 students** (the array size can be changed)
 * 🆔 Student IDs are not automatically checked for duplicates
 * 📊 Grade input is not fully validated
 * ⚠️ Names containing commas may interfere with the CSV format
